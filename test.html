@@ -26,7 +26,7 @@
                         let reader = new FileReader();
                         let self = this;
                         reader.onloadend = () => {
-                            slef.parsed = 'preparing...';
+                            self.parsed = 'preparing...';
                             let binaryString = '';
                             let bytes = new Uint8Array(reader.result);
                             let length = bytes.byteLength;
