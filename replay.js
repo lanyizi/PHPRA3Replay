@@ -16,10 +16,13 @@ Vue.component('replay', {
     },
     props: ['replayid', 'defaultmapimagepath', 'mapimageformat', 'factioniconformat'],
     mounted: function () {
-        let self = this;
         fetch('/replays/replay.php?do=getReplayInformation&id=' + this.replayid)
             .then(response => response.json())
-            .then(parsed => { self.replay = parsed || self.replay; });
+            .then(parsed => {
+                if (parsed) {
+                    Object.assign(this.replay, parsed);
+                }
+            });
     },
     methods: {
         onMapPathFailed: function () {
