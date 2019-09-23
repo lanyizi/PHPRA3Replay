@@ -30,7 +30,7 @@
                             let binaryString = '';
                             let bytes = new Uint8Array(buffer);
                             let length = bytes.byteLength;
-                            for (var i = 0; i < len; ++i) {
+                            for (var i = 0; i < length; ++i) {
                                 binaryString +=  String.fromCharCode(bytes[i]);
                             }
                             let base64 = btoa(binaryString);
