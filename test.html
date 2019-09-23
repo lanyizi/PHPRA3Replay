@@ -5,7 +5,7 @@
     </head>
     <body>
         <div id="app">
-            <input type="file" @change="onFileChange(this.files)" />
+            <input type="file" ref="myFiles" @change="onFileChange()" />
             <p>{{ parsed }}</p>
         </div>
         <script>
@@ -15,8 +15,9 @@
                     parsed: ''
                 },
                 methods: {
-                    onFileChange: function(files) {
+                    onFileChange: function() {
                         this.parsed = 'reading...';
+                        let files = this.$refs.myFiles.files;
                         if(files.length == 0) {
                             this.parsed = 'nothing selected';
                             return;
