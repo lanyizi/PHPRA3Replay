@@ -20,7 +20,7 @@ Vue.component('replay', {
             .then(response => response.json())
             .then(parsed => {
                 if (parsed) {
-                    this.replay = parsed.replay;
+                    Object.assign(this.replay, parsed.replay);
                 }
             });
     },
