@@ -6,7 +6,7 @@
     <body>
         <div id="app">
             <input type="file" @change="onFileChange(this.files)" />
-            <p v-model="parsed"></p>
+            <p>{{ parsed }}</p>
         </div>
         <script>
             let app = new Vue({
