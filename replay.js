@@ -40,11 +40,11 @@ Vue.component('replay', {
             <span v-else>
                 正在加载...
             </span>
-        <span>
+        </span>
         <span v-if="!!(replay.fileSize)" class="replay-fileSize">
             {{ (parseInt(replay.fileSize) / 1024).toFixed(2) }} KB
-        <span>
-        <br>
+        </span>
+        <br />
         <table>
             <tr>
                 <td class="replay-map-container">
