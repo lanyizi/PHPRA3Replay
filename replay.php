@@ -168,6 +168,13 @@ class RA3Replay {
                 'message' => 'Operation succeeded'
             ];
         }
+        catch(ReplayAlreadyExistsException $exception) {
+            return [
+                'id' => $exception->id,
+                'isDuplicate' => true,
+                'message' => $exception->getMessage()
+            ]
+        }
         catch(MyException $exception) {
             return [
                 'id' => null,
