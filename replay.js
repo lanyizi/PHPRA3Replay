@@ -35,7 +35,7 @@ Vue.component('replay', {
             return this.mapimageformat.replace('*', this.replay.mapPath);
         },
         playersWithFactionIcon: function () {
-            return this.players.map(team => {
+            return this.replay.players.map(team => {
                 return team.map(player => {
                     let computeFactionIcon = (faction) => {
                         try {
