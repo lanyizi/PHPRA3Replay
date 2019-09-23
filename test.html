@@ -14,7 +14,7 @@
             <p>{{ uploadStatus }}</p>
             <ul>
                 <li v-for="id in replayList">
-                    <replay :replayID="id"></replay>
+                    <replay :replayID="id" :key="id"></replay>
                 </li>
             </ul>
         </div>
