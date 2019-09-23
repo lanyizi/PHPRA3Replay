@@ -18,7 +18,7 @@ Vue.component('replay', {
     props: ['replayID', 'defaultMapImagePath', 'mapImageFormat', 'factionIconFormat'],
     mounted: function() {
         let self = this;
-        fetch('/replays/?do=getReplayInformation&id=' + this.replayID)
+        fetch('/replays/replay.php?do=getReplayInformation&id=' + this.replayID)
             .then(response => { self.replay = response.json() })
             .then(() => {
                 self.mapImagePath = self.mapImageFormat.replace('*', self.replay.mapPath);
