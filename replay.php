@@ -301,7 +301,7 @@ class RA3Replay {
             'fileSize' => strlen($replayData),
             'mapName' => $mapName,
             'mapPath' => $mapPath,
-            'players' => $teams,
+            'players' => array_values($teams),
             'seed' => $seed,
             'timeStamp' => $timeStamp
         ];

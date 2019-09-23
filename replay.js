@@ -26,13 +26,16 @@ Vue.component('replay', {
     },
     methods: {
         onMapPathFailed: function () {
-            if (this.mapImagePath != this.defaultmapimagepath) {
-                this.mapImagePath = this.defaultmapimagepath;
+            if (this.replay.mapPath != this.defaultmapimagepath) {
+                this.replay.mapPath = this.defaultmapimagepath;
             }
         }
     },
     computed: {
         mapImagePath: function () {
+            if (this.replay.mapPath == this.defaultmapimagepath) {
+                return this.defaultmapimagepath;
+            }
             if (this.mapimageformat === undefined) {
                 return '';
             }
