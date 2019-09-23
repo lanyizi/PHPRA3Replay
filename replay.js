@@ -28,27 +28,40 @@ Vue.component('replay', {
         }
     },
     computed: {
-        mapImageFormat: function () {
+        mapImagePath: function () {
             if (this.mapimageformat === undefined) {
                 return '';
             }
-            return this.mapimageformat.replace('*', self.replay.mapPath);
+            return this.mapimageformat.replace('*', this.replay.mapPath);
         },
-        factionIconFormat: function () {
-            if (this.factioniconformat === undefined) {
-                return '';
-            }
-            return this.factioniconformat.replace('*', player.faction);
+        playersWithFactionIcon: function () {
+            return this.players.map(team => {
+                return team.map(player => {
+                    let computeFactionIcon = (faction) => {
+                        try {
+                            return this.factioniconformat.replace('*', faction)
+                        }
+                        catch (exception) {
+                            return '';
+                        }
+                    };
+                    return {
+                        name: player.name,
+                        factionIconPath: computeFactionIcon(player.faction),
+                    };
+                });
+            });
         }
     },
     template: 
     `<div>
         <span class="replay-fileName">
+            {{ replayid }}&nbsp;-&nbsp;
             <a v-if="!!(replay.url)" :href="replay.url" :download="replay.fileName">
                 {{ replay.fileName }}
             </a>
             <span v-else>
-                正在加载...
+                {{ replay.fileName }}
             </span>
         </span>
         <span v-if="!!(replay.fileSize)" class="replay-fileSize">
@@ -65,9 +78,9 @@ Vue.component('replay', {
                 </td>
                 <td class="replay-player-teams-container">
                     <ul class="replay-player-team">
-                        <li v-for="team in replay.players">
+                        <li v-for="team in playersWithFactionIcon">
                             <span v-for="player in team" :key="player.name">
-                                <img :src="factionIconFormat" />
+                                <img :src="factionIconPath" />
                                 {{ player.name }}
                             </span>
                         </li>
