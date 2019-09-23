@@ -15,19 +15,19 @@ Vue.component('replay', {
             mapImagePath: '',
         };
     },
-    props: ['replayID', 'defaultMapImagePath', 'mapImageFormat', 'factionIconFormat'],
+    props: ['replayid', 'defaultmapimagepath', 'mapimageformat', 'factioniconformat'],
     mounted: function() {
         let self = this;
-        fetch('/replays/replay.php?do=getReplayInformation&id=' + this.replayID)
+        fetch('/replays/replay.php?do=getReplayInformation&id=' + this.replayid)
             .then(response => { self.replay = response.json() })
             .then(() => {
-                self.mapImagePath = self.mapImageFormat.replace('*', self.replay.mapPath);
+                self.mapImagePath = self.mapimageformat.replace('*', self.replay.mapPath);
             });
     },
     methods: {
         onMapPathFailed: function () {
-            if (this.mapImagePath != this.defaultMapImagePath) {
-                this.mapImagePath = this.defaultMapImagePath;
+            if (this.mapImagePath != this.defaultmapimagepath) {
+                this.mapImagePath = this.defaultmapimagepath;
             }
         }
     },
@@ -57,7 +57,7 @@ Vue.component('replay', {
                     <ul class="replay-player-team">
                         <li v-for="team in replay.players">
                             <span v-for="player in team" :key="player.name">
-                                <img :src="factionIconFormat.replace('*', player.faction)" />
+                                <img :src="factioniconformat.replace('*', player.faction)" />
                                 {{ player.name }}
                             </span>
                         </li>
