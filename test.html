@@ -28,6 +28,7 @@
                 },
                 mounted: function() {
                     setInterval(this.loadReplays, 10000);
+                    this.loadReplays();
                 },
                 methods: {
                     loadReplays: function() {

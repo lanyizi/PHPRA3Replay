@@ -17,11 +17,11 @@ Vue.component('replay', {
     },
     props: ['replayid', 'defaultmapimagepath', 'mapimageformat', 'factioniconformat'],
     mounted: function () {
-        if (self.mapimageformat === undefined) {
-            self.mapimageformat = '';
+        if (this.mapimageformat === undefined) {
+            this.mapimageformat = '';
         }
-        if (self.factioniconformat === undefined) {
-            self.factioniconformat = '';
+        if (this.factioniconformat === undefined) {
+            this.factioniconformat = '';
         }
         let self = this;
         fetch('/replays/replay.php?do=getReplayInformation&id=' + this.replayid)
