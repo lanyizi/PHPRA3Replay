@@ -32,7 +32,7 @@
                 methods: {
                     loadReplays: function() {
                         let self = this;
-                        fetch('replays.php?do=getReplayList')
+                        fetch('replay.php?do=getReplayList')
                         .then(response => response.json())
                         .then(json => { self.replayList = json.replays || []; });
                     },
