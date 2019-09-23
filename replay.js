@@ -18,7 +18,8 @@ Vue.component('replay', {
     mounted: function () {
         let self = this;
         fetch('/replays/replay.php?do=getReplayInformation&id=' + this.replayid)
-            .then(response => { self.replay = response.json() || self.replay; });
+            .then(response => response.json())
+            .then(parsed => { self.replay = parsed || self.replay; });
     },
     methods: {
         onMapPathFailed: function () {
