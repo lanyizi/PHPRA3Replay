@@ -84,7 +84,7 @@ Vue.component('replay', {
                     <ul class="replay-player-team">
                         <li v-for="team in playersWithFactionIcon">
                             <span v-for="player in team" :key="player.name">
-                                <img :src="factionIconPath" />
+                                <img :src="player.factionIconPath" />
                                 {{ player.name }}
                             </span>
                         </li>
