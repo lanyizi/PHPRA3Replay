@@ -173,7 +173,7 @@ class RA3Replay {
                 'id' => $exception->id,
                 'isDuplicate' => true,
                 'message' => $exception->getMessage()
-            ]
+            ];
         }
         catch(MyException $exception) {
             return [

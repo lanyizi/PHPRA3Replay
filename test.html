@@ -25,16 +25,16 @@
                         let file = files.item(0);
                         let reader = new FileReader();
                         let self = this;
-                        reader.onloadend = (buffer) => {
-                            this.parsed = 'preparing...';
+                        reader.onloadend = () => {
+                            slef.parsed = 'preparing...';
                             let binaryString = '';
-                            let bytes = new Uint8Array(buffer);
+                            let bytes = new Uint8Array(reader.result);
                             let length = bytes.byteLength;
                             for (var i = 0; i < length; ++i) {
                                 binaryString +=  String.fromCharCode(bytes[i]);
                             }
                             let base64 = btoa(binaryString);
-                            this.parsed = 'loading...';
+                            self.parsed = 'loading...';
                             fetch('replay.php?do=test', {
                                 method: 'post',
                                 body: JSON.stringify({
