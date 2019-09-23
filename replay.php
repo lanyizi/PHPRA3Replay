@@ -89,16 +89,27 @@ class RA3Replay {
         return $this->$what();
     }
 
+    public function getReplayList() {
+        $list = $this->database->select('new-replays', [
+            'id'
+        ], [
+            'deletedDate' => null
+        ]);
+        return [
+            'replays' => $list
+        ];
+    }
+
     public function getReplayInformation() {
         $id = $_GET['id'];
         $replayData = $this->database->get('new-replays', [
             'description',
+            'isPartial',
             'fileName',
             'fileSize',
             'mapName',
             'mapPath',
             'timeStamp',
-            'isPartial',
             'players'
         ], [
             'AND' => [
@@ -127,9 +138,8 @@ class RA3Replay {
             $this->database->action(function(Medoo $database) use (&$id) {
                 $replayFile = base64_decode($this->input['data']);
                 $replayData = RA3Replay::parseRA3Replay($replayFile);
-                if(isset($this->input['description'])) {
-                    $replayData['description'] = $this->input['description'];
-                }
+                $replayData['description'] = is_string($this->input['description']) ? $this->input['description'] : '';
+                $replayData['isPartial'] = is_bool($this->input['isPartial']) ? $this->input['isPartial'] : false;
                 // Store player data as json for simplicity
                 $replayData['players'] = json_encode($replayData['players']);
                 $replayData['fileName'] = $this->input['fileName'];
@@ -315,6 +325,10 @@ class RA3Replay {
             'string' => iconv('utf-16', 'utf-8', $string),
             'newIndex' => $index
         ];
+    }
+
+    private function getFinalReplayName($id) {
+        return $this->replayDirectory . '/' . $id . '.RA3Replay';
     }
 }
 
