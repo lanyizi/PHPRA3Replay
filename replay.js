@@ -16,12 +16,18 @@ Vue.component('replay', {
         };
     },
     props: ['replayid', 'defaultmapimagepath', 'mapimageformat', 'factioniconformat'],
-    mounted: function() {
+    mounted: function () {
+        if (self.mapimageformat === undefined) {
+            self.mapimageformat = '';
+        }
+        if (self.factioniconformat === undefined) {
+            self.factioniconformat = '';
+        }
         let self = this;
         fetch('/replays/replay.php?do=getReplayInformation&id=' + this.replayid)
             .then(response => { self.replay = response.json() })
             .then(() => {
-                self.mapImagePath = self.mapimageformat.replace('*', self.replay.mapPath);
+                self.mapImagePath = self.mapimageformat.replace('*', self.replay.mapPath);    
             });
     },
     methods: {
