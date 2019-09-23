@@ -17,7 +17,11 @@
                 methods: {
                     onFileChange: function(files) {
                         this.parsed = 'reading...';
-                        let file = files.items(0);
+                        if(file.length == 0) {
+                            this.parsed = 'nothing selected';
+                            return;
+                        }
+                        let file = files.item(0);
                         let reader = new FileReader();
                         let self = this;
                         reader.onloadend = (buffer) => {
