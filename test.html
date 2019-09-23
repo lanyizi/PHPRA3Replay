@@ -17,7 +17,7 @@
                 methods: {
                     onFileChange: function(files) {
                         this.parsed = 'reading...';
-                        if(file.length == 0) {
+                        if(files.length == 0) {
                             this.parsed = 'nothing selected';
                             return;
                         }
