@@ -12,29 +12,33 @@ Vue.component('replay', {
                 timeStamp: '',
                 url: ''
             },
-            mapImagePath: '',
         };
     },
     props: ['replayid', 'defaultmapimagepath', 'mapimageformat', 'factioniconformat'],
     mounted: function () {
-        if (this.mapimageformat === undefined) {
-            this.mapimageformat = '';
-        }
-        if (this.factioniconformat === undefined) {
-            this.factioniconformat = '';
-        }
         let self = this;
         fetch('/replays/replay.php?do=getReplayInformation&id=' + this.replayid)
-            .then(response => { self.replay = response.json() })
-            .then(() => {
-                self.mapImagePath = self.mapimageformat.replace('*', self.replay.mapPath);    
-            });
+            .then(response => { self.replay = response.json() || self.replay; });
     },
     methods: {
         onMapPathFailed: function () {
             if (this.mapImagePath != this.defaultmapimagepath) {
                 this.mapImagePath = this.defaultmapimagepath;
             }
+        }
+    },
+    computed: {
+        mapImageFormat: function () {
+            if (this.mapimageformat === undefined) {
+                return '';
+            }
+            return this.mapimageformat.replace('*', self.replay.mapPath);
+        },
+        factionIconFormat: function () {
+            if (this.factioniconformat === undefined) {
+                return '';
+            }
+            return this.factioniconformat.replace('*', player.faction);
         }
     },
     template: 
@@ -63,7 +67,7 @@ Vue.component('replay', {
                     <ul class="replay-player-team">
                         <li v-for="team in replay.players">
                             <span v-for="player in team" :key="player.name">
-                                <img :src="factioniconformat.replace('*', player.faction)" />
+                                <img :src="factionIconFormat" />
                                 {{ player.name }}
                             </span>
                         </li>
