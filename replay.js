@@ -14,9 +14,9 @@ Vue.component('replay', {
             },
         };
     },
-    props: ['replayid', 'defaultmapimagepath', 'mapimageformat', 'factioniconformat'],
+    props: ['replayId', 'defaultMapImagePath', 'mapImageFormat', 'factionIconFormat'],
     mounted: function () {
-        fetch('/replays/replay.php?do=getReplayInformation&id=' + this.replayid)
+        fetch('/replays/replay.php?do=getReplayInformation&id=' + this.replayId)
             .then(response => response.json())
             .then(parsed => {
                 if (parsed) {
@@ -26,27 +26,27 @@ Vue.component('replay', {
     },
     methods: {
         onMapPathFailed: function () {
-            if (this.replay.mapPath != this.defaultmapimagepath) {
-                this.replay.mapPath = this.defaultmapimagepath;
+            if (this.replay.mapPath != this.defaultMapImagePath) {
+                this.replay.mapPath = this.defaultMapImagePath;
             }
         }
     },
     computed: {
         mapImagePath: function () {
-            if (this.replay.mapPath == this.defaultmapimagepath) {
-                return this.defaultmapimagepath;
+            if (this.replay.mapPath == this.defaultMapImagePath) {
+                return this.defaultMapImagePath;
             }
-            if (this.mapimageformat === undefined) {
+            if (this.mapImageFormat === undefined) {
                 return '';
             }
-            return this.mapimageformat.replace('*', this.replay.mapPath);
+            return this.mapImageFormat.replace('*', this.replay.mapPath);
         },
         playersWithFactionIcon: function () {
             return this.replay.players.map(team => {
                 return team.map(player => {
                     let computeFactionIcon = (faction) => {
                         try {
-                            return this.factioniconformat.replace('*', faction)
+                            return this.factionIconFormat.replace('*', faction)
                         }
                         catch (exception) {
                             return '';
@@ -63,7 +63,7 @@ Vue.component('replay', {
     template: 
     `<div>
         <span class="replay-fileName">
-            {{ replayid }}&nbsp;-&nbsp;
+            {{ replayId }}&nbsp;-&nbsp;
             <a v-if="!!(replay.url)" :href="replay.url" :download="replay.fileName">
                 {{ replay.fileName }}
             </a>
