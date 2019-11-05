@@ -2,7 +2,7 @@
 <html>
     <head>
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-        <script src="replay.js"></script>
+        <script src="replay-example.js"></script>
     </head>
     <body>
         <div id="app">
@@ -14,7 +14,7 @@
             <p>{{ uploadStatus }}</p>
             <ul>
                 <li v-for="replay in replayList">
-                    <replay :replayID="replay.id" :key="replay.id"></replay>
+                    <replay :replay-id="replay.id" :key="replay.id"></replay>
                 </li>
             </ul>
         </div>
