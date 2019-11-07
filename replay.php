@@ -39,7 +39,6 @@ class MyException extends Exception {
     }
 }
 
-
 class ReplayAlreadyExistsException extends MyException {
     public $id;
     public function __construct($id) {
@@ -67,9 +66,37 @@ class RA3Replay {
         $this->database = $database;
         $this->replayDirectory = 'uploadedReplays';
 
+        $this->database->create('new_replays',  [
+            'id' => [
+                'INT',
+                'NOT NULL',
+                'AUTO_INCREMENT',
+                'PRIMARY KEY'
+            ],
+            'description'   => [ 'TEXT',    'NOT NULL' ],
+            'isPartial'     => [ 'BOOLEAN', 'NOT NULL' ],
+            'fileName'      => [ 'TEXT',    'NOT NULL' ],
+            'fileSize'      => [ 'INT',     'NOT NULL' ],
+            'mapPath'       => [ 'TEXT',    'NOT NULL' ],
+            'mapName'       => [ 'TEXT',    'NOT NULL' ],
+            'players'       => [ 'TEXT',    'NOT NULL' ],
+            'seed'          => [ 'INT',     'NOT NULL' ],
+            'timeStamp'     => [ 'BIGINT',  'NOT NULL' ],
+            'totalFrames'   => [ 'INT' ],
+            'title'         => [ 'TEXT' ],
+            'newVersion'    => [ 'INT' ],
+            'deletedBy'     => [ 'TEXT' ],
+            'deletedDate'   => [ 'BIGINT' ],
+        ]);
+
+        $this->database->create('new_replays_tags',  [
+            'replayId' =>   [ 'INT',    'NOT NULL' ],
+            'tag' =>        [ 'TEXT',   'NOT NULL' ]
+        ]);
+
         if(!is_dir($this->replayDirectory)) {
             if(!mkdir($this->replayDirectory, 0777, true)) {
-                throw new Exception("failed to create replay directory");
+                throw new Exception('failed to create replay directory');
             }
         }
     }
@@ -90,19 +117,42 @@ class RA3Replay {
     }
 
     public function getReplayList() {
-        $list = $this->database->select('new-replays', [
-            'id'
-        ], [
-            'deletedDate' => null
-        ]);
+        $list = null;
+        if(empty($_GET['tag'])) {
+            $list = $this->database->select('new_replays', [
+                'id'
+            ], [
+                'deletedDate' => null
+            ]);
+        }
+        else {
+            $list = $this->database->select('new_replays', [
+                '[><]new_replays_tags' => ['id' => 'replayId']
+            ], [
+                'new_replays.id (id)'
+            ], [
+                'deletedDate' => null
+            ]);
+        }
         return [
             'replays' => $list
         ];
     }
 
+    public function getTagList() {
+        $list = $this->database->select('new_replays', [
+            'tag'
+        ], [
+            'GROUP' => 'tag'
+        ]);
+        return [
+            'tags' => $list
+        ];
+    }
+
     public function getReplayInformation() {
         $id = $_GET['id'];
-        $replayData = $this->database->get('new-replays', [
+        $replayData = $this->database->get('new_replays', [
             'description',
             'isPartial',
             'fileName',
@@ -110,20 +160,30 @@ class RA3Replay {
             'mapName',
             'mapPath',
             'timeStamp',
-            'players'
+            'players',
+            'totalFrames',
+            'title',
+            'newVersion'
         ], [
             'AND' => [
                 'deletedDate' => null,
                 'id' => $id
-            ]
+            ],
         ]);
 
         if(empty($replayData)) {
             $replayData = null;
         }
         else {
+            $tags = $this->database->select('new_replays', [
+                'tag'
+            ], [
+                'replayId' => $id
+            ]);
+
             $replayData['players'] = json_decode($replayData['players'], true);
             $replayData['url'] = $this->getFinalReplayName($id);
+            $replayData['tags'] = array_column($tags, 'tag');
         }
 
         return [
@@ -144,12 +204,19 @@ class RA3Replay {
                 $replayData['players'] = json_encode($replayData['players']);
                 $replayData['fileName'] = $this->input['fileName'];
 
+                if(!empty($this->input['title'])) {
+                    $replayData['title'] = $this->input['title'];
+                }
+
                 // Check if this replay already exists
-                $existing = $database->get('new-replays', [
-                    'id'
+                $existing = $database->get('new_replays', [
+                    'id',
+                    'totalFrames',
+                    'fileSize'
                 ], [
                     'AND' => [
                         'deletedDate' => null,
+                        'newVersion' => null,
                         'mapPath' => $replayData['mapPath'],
                         'players' => $replayData['players'],
                         'seed' => $replayData['seed'],
@@ -157,13 +224,52 @@ class RA3Replay {
                     ]
                 ]);
                 if(!empty($existing)) {
+                    // Check if we are providing a more complete file (by checking totalFrames or file size)
                     $oldId = $existing['id'];
-                    throw new ReplayAlreadyExistsException($oldId);
+
+                    // Cannot check if the new replay is corrupted
+                    if(empty($replayData['totalFrames'])) {
+                        throw new ReplayAlreadyExistsException($oldId);    
+                    }
+
+                    // Check file size of old replay if it's corrupted
+                    if(empty($existing['totalFrames'])) {
+                        if($replayData['fileSize'] <= $existing['fileSize']) {
+                            throw new ReplayAlreadyExistsException($oldId);    
+                        }
+                    }
+
+                    // Check number of frames
+                    if($replayData['totalFrames'] <= $existing['totalFrames']) {
+                        throw new ReplayAlreadyExistsException($oldId);    
+                    }
+
+                    // If new replay has more frames than the existing one
+                    // Let it become a newer version
                 }
 
                 // Save to database
-                $database->insert('new-replays', $replayData);
+                $database->insert('new_replays', $replayData);
                 $id = $database->id();
+
+                // Save tags to database
+                $tags = is_string($this->input['tags']) ? json_decode($this->input['tags']) : [];
+                $tags = is_array($tags) ? array_map(function($tag) use($id) {
+                    return [ 'replayId' => $id, 'tag' => $tag ];
+                }, $tags) : [];
+                if(!empty($tags)) {
+                    $database->insert('new_replays_tags', $tags);
+                }
+
+                // Update existing replay's `newVersion`
+                if(!empty($existing)) {
+                    $database->update('new_replays', [
+                        'newVersion' => $id
+                    ], [
+                        'id' => $existing['id']
+                    ]);
+                }
+
                 // Save replay file
                 $finalFileName = $this->getFinalReplayName($id);
                 $writeResult = file_put_contents($finalFileName, $replayFile, LOCK_EX);
@@ -232,7 +338,7 @@ class RA3Replay {
     public static function parseRA3Replay($replayData) {
         $replayMagic = 'RA3 REPLAY HEADER';
         $magicLength = strlen($replayMagic);
-        if(substr($replayData, 0, $magicLength) != $replayMagic) {
+        if(substr($replayData, 0, $magicLength) !== $replayMagic) {
             throw new MyException('Not a valid Red Alert 3 Replay');
         }
     
@@ -263,6 +369,9 @@ class RA3Replay {
         $headerLength = unpack('V', substr($replayData, $index, 4))[1];
         $index += 4;
         $header = substr($replayData, $index, $headerLength);
+        $index += $headerLength;
+        $replaySaverIndex = ord($replayData[$index]);
+        $index += 1;
 
         $chunks = array_chunk(preg_split('/(=|;)/', $header, -1, PREG_SPLIT_NO_EMPTY), 2);
         $array = array_combine(array_column($chunks, 0), array_column($chunks, 1));
@@ -270,7 +379,7 @@ class RA3Replay {
         $seed = (int)($array['SD']);
         $playerArray = explode(':', $array['S']);
         $teams = [];
-        foreach($playerArray as $playerString) {
+        foreach($playerArray as $playerIndex => $playerString) {
             $playerData = explode(',', $playerString);
             $playerName = $playerData[0];
             if($playerName[0] == 'H' || $playerName[0] == 'C') {
@@ -279,7 +388,8 @@ class RA3Replay {
                 $playerTeam = (int)($playerData[7]);
                 $parsedPlayerData = [
                     'name' => $realPlayerName,
-                    'faction' => $playerFaction
+                    'faction' => $playerFaction,
+                    'isSaver' => ($playerIndex === $replaySaverIndex)
                 ];
                 if($realPlayerName != 'post Commentator') {
                     if(!isset($teams[$playerTeam])) {
@@ -297,13 +407,27 @@ class RA3Replay {
             unset($teams[-1]);
         }
 
+        // read footer - totalFrames
+        $totalFrames = null;
+        $footerLength = unpack('V', substr($replayData, -4, 4))[1];
+        $footer = substr($replayData, -$footerLength, $footerLength);
+        $footerMagic = 'RA3 REPLAY FOOTER';
+        $footerMagicLength = strlen($footerMagic);
+        if(substr($footer, 0, $footerMagicLength) === $footerMagic) {
+            $totalFramesHolder = substr($replayData, 4, 4);
+            if($totalFramesHolder !== false && strlen($totalFramesHolder) === 4) {
+                $totalFrames = unpack('V', substr($replayData, 4, 4))[1];
+            }
+        }        
+
         return [
             'fileSize' => strlen($replayData),
             'mapName' => $mapName,
             'mapPath' => $mapPath,
             'players' => array_values($teams),
             'seed' => $seed,
-            'timeStamp' => $timeStamp
+            'timeStamp' => $timeStamp,
+            'totalFrames' => $totalFrames
         ];
     }
 
