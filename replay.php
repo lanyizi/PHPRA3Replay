@@ -259,7 +259,7 @@ class RA3Replay {
                     return [ 'replayId' => $id, 'tag' => $tag ];
                 }, $tags) : [];
                 if(!empty($tags)) {
-                    $database->insert('new_replays_tags', $tags);
+                    $database->insert('new_replays_tags', array_values($tags));
                 }
 
                 // Update existing replay's `newVersion`
