@@ -38,7 +38,7 @@
                     placeholder="上传录像类型"
                     v-model="uploadTag"
                     :tags="complexUploadTags"
-                    :autocomplete-items="availableComplexUploadTags"
+                    :autocomplete-items="availableComplexFilterTags"
                     @tags-changed="newTags => complexUploadTags = newTags"
                 >
                 <input type="text" v-model="title" placeholder="title" />
