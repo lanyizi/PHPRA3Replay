@@ -25,7 +25,9 @@
             </tr>
             <tr>
                 <td v-for="(obs, i) in observers" :key="i">
-                    <img :src="obs.factionIcon" />
+                    <div class="replay-player-faction img-container inline-block">
+                        <img :src="obs.factionIcon" />
+                    </div>
                     {{ obs.name }}
                 </td>
             </tr>
@@ -196,7 +198,7 @@ module.exports = {
         nonObserverTeams() {
             return this.replay.players.map(team => 
                 team
-                .filter(player => (![2, 3].includes(player.faction)))
+                .filter(player => (![1, 3].includes(player.faction)))
                 .map(player => {
                     return {
                         name: player.name,
@@ -210,7 +212,7 @@ module.exports = {
             return this.replay.players
             .map(team => 
                 team
-                .filter(player => [2, 3].includes(player.faction))
+                .filter(player => [1, 3].includes(player.faction))
             )
             .filter(team => team.length > 0)
             .map(team => { 
