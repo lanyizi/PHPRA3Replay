@@ -1,21 +1,19 @@
 <template>
 <div class="replay-item-compact">
-    <span class="id-container">
-        <span class="placeholder">
-        </span>
+    <div class="id-container inline-block">
         <span class="replay-id">
             {{ replayId }}
         </span>
         <span v-if="replay.newVerion != null" class="replay-id">
             -> {{ replay.newVerion }}
         </span>
-    </span>
+    </div>
 
     <div class="replay-minimap img-container inline-block">
         <img :src="mapImagePath" v-on:error="onMapPathFailed"/>
     </div>
     
-    <span class="replay-players">
+    <div class="replay-players inline-block">
         <table>
             <tr v-for="(team, i) in nonObserverTeams" :key="i">
                 <td v-for="(player, j) in team" :key="j">
@@ -32,9 +30,9 @@
                 </td>
             </tr>
         </table>
-    </span>
+    </div>
 
-    <span class="replay-information">
+    <div class="replay-information inline-block">
         <div>
             <span v-for="tag in replay.tags" :key="tag" class="replay-tag">
                 {{ tag }};
@@ -54,16 +52,16 @@
                 {{ date }}
             </span>
         </div>
-    </span>
+    </div>
     <button v-if="replayDescriptionOverflowing" class="replay-show-full" @click="expanded = !expanded">
         ...
     </button>
     <a :href="replay.url" :download="downloadFileName" class="replay-download inline-block">
         download
     </a>
-    <span class="replay-description" v-if="expanded">
+    <div class="replay-description inline-block" v-if="expanded">
         {{ replay.description }}            
-    </span>
+    </div>
 </div>
 </template>
 <style scoped>
@@ -103,13 +101,8 @@
     vertical-align: middle;
 }
 
-.replay-item-compact .id-container {
-    width: 5%;
-    display: flex;
-}
-
-.replay-item-compact .id-container .placeholder {
-    flex: auto;
+.replay-item-compact .id-container .replay-id {
+    float: right;
 }
 
 .replay-item-compact .replay-minimap {
