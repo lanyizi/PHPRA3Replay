@@ -11,13 +11,17 @@
         </span>
     </span>
 
-    <img :src="mapImagePath" v-on:error="onMapPathFailed" class="replay-minimap"/>
+    <div class="replay-minimap img-container inline-block">
+        <img :src="mapImagePath" v-on:error="onMapPathFailed"/>
+    </div>
     
     <span class="replay-players">
         <table>
             <tr v-for="(team, i) in nonObserverTeams" :key="i">
                 <td v-for="(player, j) in team" :key="j">
-                    <img :src="player.factionIcon" />
+                    <div class="replay-player-faction img-container inline-block">
+                        <img :src="player.factionIcon" />
+                    </div>
                     {{ player.name }}
                 </td>
             </tr>
@@ -34,7 +38,7 @@
         <span>
             <div>
                 <span v-for="tag in replay.tags" :key="tag" class="replay-tag">
-                    {{ tag }}
+                    {{ tag }};
                 </span>
                 <span class="replay-title">
                     {{ title }}
@@ -65,10 +69,34 @@
 </div>
 </template>
 <style scoped>
+
+.inline-block {
+    display: inline-block;
+}
+
+.img-container:after {
+  content: "";
+  display: block;
+  padding-bottom: 100%; /* The padding depends on the width, not on the height, so with a padding-bottom of 100% you will get a square */
+}
+
+.img-container img {
+  position: absolute; /* Take your picture out of the flow */
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0; /* Make the picture taking the size of it's parent */
+  width: 100%; /* This if for the object-fit */
+  height: 100%; /* This if for the object-fit */
+  object-fit: cover; /* Equivalent of the background-size: cover; of a background-image */
+  object-position: center;
+}
+
 .replay-item-compact {
     position: relative;
     display: flex;
     flex-direction: row;
+    vertical-align: middle;
 }
 
 .replay-item-compact .title-container {
@@ -86,6 +114,10 @@
 
 .replay-item-compact .replay-players {
     width: 20%;
+}
+
+.replay-item-compact .replay-players .replay-player-faction {
+    width: 1.5em;
 }
 
 .replay-item-compact .replay-information {
