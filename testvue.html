@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/http-vue-loader/src/httpVueLoader.min.js"></script>
+        <script src="https://unpkg.com/@johmun/vue-tags-input/dist/vue-tags-input.js"></script>
+    </head>
+    <body>
+        <div id="app">
+            <vue-tags-input
+                :tags="tags"
+                @tags-changed="newTags => { tags = newTags; loadReplays(); }"
+            />
+            <input type="text" v-model="title" placeholder="title" />
+            <input type="text" v-model="description" placeholder="description"/>
+            <label for="upload">Upload:</label>
+            <input type="file" id="upload" ref="upload" />
+            <button @click="uploadReplay">Upload</button>
+            <p>{{ uploadStatus }}</p>
+            <div v-for="replay in replayList" :key="replay.id">
+                <replay :replay-id="replay.id"></replay>
+            </div>
+        </div>
+        <script>
+            const app = new Vue({
+                el: '#app',
+                components: {
+                    'replay-item': httpVueLoader('replay-compact.vue'),
+                },
+                data() {
+                    return {
+                        title: '',
+                        description: '',
+                        uploadStatus: '',
+                        replayList: [],
+                        tags: []
+                    };
+                },
+                mounted() {
+                    setInterval(this.loadReplays, 10000);
+                    this.loadReplays();
+                },
+                methods: {
+                    loadReplays() {
+                        let self = this;
+                        fetch('replay.php?do=getReplayList')
+                        .then(response => response.json())
+                        .then(json => { self.replayList = json.replays || []; });
+                    },
+                    uploadReplay() {
+                        let files = this.$refs.upload.files;
+                        this.uploadStatus = 'reading...';
+                        if(files.length == 0) {
+                            this.uploadStatus = 'nothing selected';
+                            return;
+                        }
+                        let file = files.item(0);
+                        let reader = new FileReader();
+                        let self = this;
+                        reader.onloadend = () => {
+                            self.uploadStatus = 'preparing...';
+                            let binaryString = '';
+                            let bytes = new Uint8Array(reader.result);
+                            let length = bytes.byteLength;
+                            for (var i = 0; i < length; ++i) {
+                                binaryString += String.fromCharCode(bytes[i]);
+                            }
+                            let base64 = btoa(binaryString);
+                            self.uploadStatus = 'loading...';
+                            fetch('/replays/replay.php?do=uploadReplay', {
+                                method: 'post',
+                                body: JSON.stringify({
+                                    fileName: file.name,
+                                    data: base64,
+                                    title: this.title,
+                                    description: this.description,
+                                    tags: this.tags
+                                }),
+                                headers: {
+                                    'content-type': 'application/json'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(json => { 
+                                self.uploadStatus = 'result: ' + json;  
+                                self.loadReplays();
+                            });
+                        };
+                        reader.readAsArrayBuffer(file);
+                    },
+                },
+            });
+        </script>
+    </body>
+        
+</html>
