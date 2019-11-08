@@ -59,7 +59,7 @@
         ...
     </button>
     <a :href="replay.url" :download="downloadFileName" class="replay-download inline-block">
-        download
+        下载录像
     </a>
     <div class="replay-description inline-block" v-if="expanded">
         {{ replay.description }}            
@@ -108,11 +108,12 @@
 }
 
 .replay-item-compact .replay-minimap {
-    width: 10%;
+    width: 7.5%;
 }
 
 .replay-item-compact .replay-players {
-    width: 30%;
+    width: 35%;
+    overflow: hidden;
 }
 
 .replay-item-compact .replay-players .replay-player-faction {
@@ -120,7 +121,7 @@
 }
 
 .replay-item-compact .replay-information {
-    width: 30%;
+    width: 32.5%;
 }
 
 .replay-item-compact .replay-description {
@@ -129,11 +130,11 @@
 }
 
 .replay-item-compact .replay-show-full {
-    width: 10%;
+    width: 7.5%;
 }
 
 .replay-item-compact .replay-download {
-    width: 15%;
+    width: 12.5%;
 }
 
 </style>
