@@ -8,18 +8,23 @@
     </head>
     <body>
         <div id="app">
+            <a href="#upload">上传录像</a>
             <vue-tags-input
-                v-model="tag"
-                :tags="complexTags"
-                @tags-changed="newTags => { complexTags = newTags; loadReplays(); }"
+                placeholder="过来吧录像类型"
+                add-only-from-autocomplete="true"
+                v-model="filterTag"
+                :tags="complexFilterTags"
+                :autocomplete-items="availableComplexFilterTags"
+                @tags-changed="newTags => { complexFilterTags = newTags; loadReplays(); }"
             >
             </vue-tags-input>
-            <input type="text" v-model="title" placeholder="title" />
-            <input type="text" v-model="description" placeholder="description"/>
-            <label for="upload">Upload:</label>
-            <input type="file" id="upload" ref="upload" />
-            <button @click="uploadReplay">Upload</button>
-            <p>{{ uploadStatus }}</p>
+            <br/>
+            排序方式：
+            <select v-model="selectedOrder">
+                <option v-for="option in orderOptions" v-bind:value="option.value">
+                    {{ option.text }}
+                </option>
+            </select>
             <div v-for="replay in replayList" :key="replay.id">
                 <replay-item :replay-id="replay.id" 
                     faction-icon-format="/replays/ra3images/v1/factions/*.png"
@@ -28,6 +33,22 @@
                 >
                 </replay-item>
             </div>
+            <div id="upload">
+                <vue-tags-input
+                    placeholder="上传录像类型"
+                    v-model="UploadTag"
+                    :tags="complexUploadTags"
+                    :autocomplete-items="availableComplexUploadTags"
+                    @tags-changed="newTags => complexUploadTags = newTags"
+                >
+                <input type="text" v-model="title" placeholder="title" />
+                <input type="text" v-model="description" placeholder="description"/>
+                <label for="upload">选择录像文件：</label>
+                <input type="file" id="upload" ref="upload" />
+                <button @click="uploadReplay">上传录像</button>
+                <p>{{ uploadStatus }}</p>
+            </div>
+            
         </div>
         <script>
             const app = new Vue({
@@ -41,8 +62,24 @@
                         description: '',
                         uploadStatus: '',
                         replayList: [],
-                        complexTags: [],
-                        tag: ''
+                        filterTag: '',
+                        orderTag: '',
+                        uploadTag: '',
+                        complexFilterTags: [],
+                        complexOrderTags: [],
+                        complexUploadTags: [],
+                        availableComplexFilterTags: [],
+                        selectedOrder: null,
+                        orderOptions: [
+                            { text: '上传时间降序', value: { column: 'id', order: 'DESC' } },
+                            { text: '上传时间升序', value: { column: 'id', order: 'ASC' } },
+                            { text: '录像日期降序', value: { column: 'timeStamp', order: 'DESC' } },
+                            { text: '录像日期升序', value: { column: 'timeStamp', order: 'ASC' } },
+                            { text: '录像时长降序', value: { column: 'totalFrames', order: 'DESC' } },
+                            { text: '录像时长升序', value: { column: 'totalFrames', order: 'ASC' } },
+                            { text: '文件大小降序', value: { column: 'fileSize', order: 'DESC' } },
+                            { text: '文件大小升序', value: { column: 'fileSize', order: 'ASC' } },
+                        ]
                     };
                 },
                 mounted() {
@@ -50,12 +87,23 @@
                     this.loadReplays();
                 },
                 methods: {
+                    processComplexTags(complexTags) {
+                        return complexTags
+                        .filter(tag => tag.tiClasses.includes('ti-valid'))
+                        .map(tag => tag.text);
+                    },
                     loadReplays() {
-                        const self = this;
-                        if(this.tag)
-                        fetch('replay.php?do=getReplayList')
+                        const filters = JSON.stringify(this.processComplexTags(this.complexFilterTags));
+                        const orders = JSON.stringify([this.selectedOrder])
+                        fetch('/replays/replay.php?do=getReplayList&tags=' + filters + '&orders=' + orders)
                         .then(response => response.json())
-                        .then(json => { self.replayList = json.replays || []; });
+                        .then(json => { this.replayList = json.replays || []; });
+
+                        fetch('/replays/replay.php?do=getTagList')
+                        .then(response => response.json())
+                        .then(json => {
+                            this.availableComplexFilterTags = json.tags.map(x => { return { text: x }; });
+                        })
                     },
                     uploadReplay() {
                         let files = this.$refs.upload.files;
@@ -84,7 +132,7 @@
                                     data: base64,
                                     title: this.title,
                                     description: this.description,
-                                    tags: this.tags
+                                    tags: this.processComplexTags(this.complexUploadTags)
                                 }),
                                 headers: {
                                     'content-type': 'application/json'
@@ -100,11 +148,7 @@
                     },
                 },
                 computed: {
-                    tags() {
-                        return this.complexTags
-                        .filter(tag => tag.tiClasses.includes('ti-valid'))
-                        .map(tag => tag.text);
-                    }
+                    
                 },
             });
         </script>

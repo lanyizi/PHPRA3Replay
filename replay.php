@@ -182,7 +182,7 @@ class RA3Replay {
                 'id'
             ], [
                 'deletedDate' => null,
-                'ORDER' => $this->parseOrderString($_GET['order'])
+                'ORDER' => $this->parseOrderString($_GET['orders'])
             ]);
         }
         else {
@@ -194,7 +194,7 @@ class RA3Replay {
                 'deletedDate' => null,
                 'tags' => $tags,
                 'GROUP' => 'id',
-                'ORDER' => $this->parseOrderString($_GET['order'])
+                'ORDER' => $this->parseOrderString($_GET['orders'])
                 
             ]);
         }
