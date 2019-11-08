@@ -9,6 +9,7 @@
     <body>
         <div id="app">
             <vue-tags-input
+                v-model="tag"
                 :tags="tags"
                 @tags-changed="newTags => { tags = newTags; loadReplays(); }"
             />
@@ -34,7 +35,8 @@
                         description: '',
                         uploadStatus: '',
                         replayList: [],
-                        tags: []
+                        tags: [],
+                        tag: ''
                     };
                 },
                 mounted() {
