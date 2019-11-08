@@ -175,7 +175,7 @@ class RA3Replay {
             $replayData = null;
         }
         else {
-            $tags = $this->database->select('new_replays', [
+            $tags = $this->database->select('new_replays_tags', [
                 'tag'
             ], [
                 'replayId' => $id
