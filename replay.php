@@ -253,7 +253,7 @@ class RA3Replay {
                 $id = $database->id();
 
                 // Save tags to database
-                $tags = is_string($this->input['tags']) ? json_decode($this->input['tags']) : [];
+                $tags = is_array($this->input['tags']) ? $this->input['tags'] : [];
                 $tags = is_array($tags) ? array_map(function($tag) use($id) {
                     return [ 'replayId' => $id, 'tag' => $tag ];
                 }, $tags) : [];
