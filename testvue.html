@@ -21,11 +21,11 @@
             <button @click="uploadReplay">Upload</button>
             <p>{{ uploadStatus }}</p>
             <div v-for="replay in replayList" :key="replay.id">
-                <replay :replay-id="replay.id" 
+                <replay-item :replay-id="replay.id" 
                     faction-icon-format="/replays/ra3images/v1/factions/*.png"
                     map-image-format="/replays/ra3images/v1/maps/*_art.png"
                 >
-                </replay>
+                </replay-item>
             </div>
         </div>
         <script>
@@ -90,7 +90,7 @@
                             })
                             .then(response => response.json())
                             .then(json => { 
-                                self.uploadStatus = 'result: ' + json;  
+                                self.uploadStatus = 'result: ' + JSON.stringify(json);  
                                 self.loadReplays();
                             });
                         };
