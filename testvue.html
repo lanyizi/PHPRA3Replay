@@ -12,7 +12,8 @@
                 v-model="tag"
                 :tags="tags"
                 @tags-changed="newTags => { tags = newTags; loadReplays(); }"
-            />
+            >
+            </vue-tags-input>
             <input type="text" v-model="title" placeholder="title" />
             <input type="text" v-model="description" placeholder="description"/>
             <label for="upload">Upload:</label>
@@ -20,7 +21,11 @@
             <button @click="uploadReplay">Upload</button>
             <p>{{ uploadStatus }}</p>
             <div v-for="replay in replayList" :key="replay.id">
-                <replay :replay-id="replay.id"></replay>
+                <replay :replay-id="replay.id" 
+                    faction-icon-format="/replays/ra3images/v1/factions/*.png"
+                    map-image-format="/replays/ra3images/v1/maps/*_art.png"
+                >
+                </replay>
             </div>
         </div>
         <script>
