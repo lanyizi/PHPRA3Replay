@@ -35,37 +35,35 @@
     </span>
 
     <span class="replay-information">
-        <span>
-            <div>
-                <span v-for="tag in replay.tags" :key="tag" class="replay-tag">
-                    {{ tag }};
-                </span>
-                <span class="replay-title">
-                    {{ title }}
-                </span>
-                <span class="replay-filesize">
-                    ({{ (parseInt(replay.fileSize) / 1024).toFixed(2) }} KB)
-                </span>
-            </div>
-            <div>
-                <span class="replay-duration">
-                    {{ duration }}
-                </span>
-                <span class="replay-date">
-                    {{ date }}
-                </span>
-            </div>
-        </span>
-        <span class="replay-description" :class="{ 'replay-expanded' : expanded }">
-            {{ replay.description }}            
-        </span>
-        <button v-if="replayDescriptionOverflowing" class="replay-show-full" @click="expanded = !expanded">
-            ...
-        </button>
-        <a :href="replay.url" :download="downloadFileName">
-            download
-        </a>
+        <div>
+            <span v-for="tag in replay.tags" :key="tag" class="replay-tag">
+                {{ tag }};
+            </span>
+            <span class="replay-title">
+                {{ title }}
+            </span>
+            <span class="replay-filesize">
+                ({{ (parseInt(replay.fileSize) / 1024).toFixed(2) }} KB)
+            </span>
+        </div>
+        <div>
+            <span class="replay-duration">
+                {{ duration }}
+            </span>
+            <span class="replay-date">
+                {{ date }}
+            </span>
+        </div>
     </span>
+    <span class="replay-description" :class="{ 'replay-expanded' : expanded }">
+        {{ replay.description }}            
+    </span>
+    <button v-if="replayDescriptionOverflowing" class="replay-show-full" @click="expanded = !expanded">
+        ...
+    </button>
+    <a :href="replay.url" :download="downloadFileName">
+        download
+    </a>
 </div>
 </template>
 <style scoped>
@@ -204,7 +202,7 @@ module.exports = {
                 .map(player => {
                     return {
                         name: player.name,
-                        factionIconPath: this.getFactionIcon(player.faction),
+                        factionIcon: this.getFactionIcon(player.faction),
                     };
                 })
             )
@@ -217,7 +215,12 @@ module.exports = {
                 .filter(player => [2, 3].includes(player.faction))
             )
             .filter(team => team.length > 0)
-            .map(team => team[0]);
+            .map(team => { 
+                return {
+                    name: team[0].name,
+                    factionIcon: this.getFactionIcon(team[0].faction)
+                }; 
+            });
         },
         title() {
             return this.replay.title || this.replay.fileName;
