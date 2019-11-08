@@ -25,14 +25,17 @@
                     {{ option.text }}
                 </option>
             </select>
-            <div v-for="replay in replayList" :key="replay.id">
-                <replay-item :replay-id="replay.id" 
-                    faction-icon-format="/replays/ra3images/v1/factions/*.png"
-                    map-image-format="/replays/ra3images/v1/maps/*_art.png"
-                    default-map-image-path="/replays/ra3images/v1/factions/7.png"
-                >
-                </replay-item>
+            <div class="replay-container" style="width: 70%">
+                <div v-for="replay in replayList" :key="replay.id">
+                    <replay-item :replay-id="replay.id" 
+                        faction-icon-format="/replays/ra3images/v1/factions/*.png"
+                        map-image-format="/replays/ra3images/v1/maps/*_art.png"
+                        default-map-image-path="/replays/ra3images/v1/factions/7.png"
+                    >
+                    </replay-item>
+                </div>
             </div>
+            
             <div id="upload">
                 <vue-tags-input
                     placeholder="上传录像类型"
