@@ -10,8 +10,8 @@
         <div id="app">
             <vue-tags-input
                 v-model="tag"
-                :tags="tags"
-                @tags-changed="newTags => { tags = newTags; loadReplays(); }"
+                :tags="complexTags"
+                @tags-changed="newTags => { complexTags = newTags; loadReplays(); }"
             >
             </vue-tags-input>
             <input type="text" v-model="title" placeholder="title" />
@@ -41,7 +41,7 @@
                         description: '',
                         uploadStatus: '',
                         replayList: [],
-                        tags: [],
+                        complexTags: [],
                         tag: ''
                     };
                 },
@@ -51,7 +51,8 @@
                 },
                 methods: {
                     loadReplays() {
-                        let self = this;
+                        const self = this;
+                        if(this.tag)
                         fetch('replay.php?do=getReplayList')
                         .then(response => response.json())
                         .then(json => { self.replayList = json.replays || []; });
@@ -97,6 +98,13 @@
                         };
                         reader.readAsArrayBuffer(file);
                     },
+                },
+                computed: {
+                    tags() {
+                        return this.complexTags
+                        .filter(tag => tag.tiClasses.includes('ti-valid'))
+                        .map(tag => tag.text);
+                    }
                 },
             });
         </script>
