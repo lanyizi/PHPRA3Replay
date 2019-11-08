@@ -41,6 +41,7 @@
                     :autocomplete-items="availableComplexFilterTags"
                     @tags-changed="newTags => complexUploadTags = newTags"
                 >
+                </vue-tags-input>
                 <input type="text" v-model="title" placeholder="title" />
                 <input type="text" v-model="description" placeholder="description"/>
                 <label for="upload">选择录像文件：</label>
