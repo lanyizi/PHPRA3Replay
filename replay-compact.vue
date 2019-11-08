@@ -1,6 +1,6 @@
 <template>
 <div class="replay-item-compact">
-    <span class="title-container">
+    <span class="id-container">
         <span class="placeholder">
         </span>
         <span class="replay-id">
@@ -55,18 +55,22 @@
             </span>
         </div>
     </span>
-    <span class="replay-description" :class="{ 'replay-expanded' : expanded }">
-        {{ replay.description }}            
-    </span>
     <button v-if="replayDescriptionOverflowing" class="replay-show-full" @click="expanded = !expanded">
         ...
     </button>
-    <a :href="replay.url" :download="downloadFileName">
+    <a :href="replay.url" :download="downloadFileName" class="replay-download inline-block">
         download
     </a>
+    <span class="replay-description" v-if="expanded">
+        {{ replay.description }}            
+    </span>
 </div>
 </template>
 <style scoped>
+
+* {
+    box-sizing: border-box;
+}
 
 .inline-block {
     display: inline-block;
@@ -96,26 +100,24 @@
 
 .replay-item-compact {
     position: relative;
-    display: flex;
-    flex-direction: row;
     vertical-align: middle;
 }
 
-.replay-item-compact .title-container {
+.replay-item-compact .id-container {
     width: 5%;
     display: flex;
 }
 
-.replay-item-compact .title-container .placeholder {
+.replay-item-compact .id-container .placeholder {
     flex: auto;
 }
 
 .replay-item-compact .replay-minimap {
-    width: 5%;
+    width: 10%;
 }
 
 .replay-item-compact .replay-players {
-    width: 20%;
+    width: 30%;
 }
 
 .replay-item-compact .replay-players .replay-player-faction {
@@ -127,13 +129,16 @@
 }
 
 .replay-item-compact .replay-description {
-    flex: auto;
-    overflow: hidden;
+    width: 100%;
+    overflow: scroll;
 }
 
-.replay-item-compact .replay-description.replay-expanded {
-    overflow: unset;
-    display: inline-block;
+.replay-item-compact .replay-show-full {
+    width: 10%;
+}
+
+.replay-item-compact .replay-download {
+    width: 15%;
 }
 
 </style>
