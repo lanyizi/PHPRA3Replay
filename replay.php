@@ -117,13 +117,72 @@ class RA3Replay {
         return $this->$what();
     }
 
+    private function parseTagString($tagJSON) {
+        if(empty($tagJSON) || !is_string($tagJSON)) {
+            return [];
+        }
+        $parsed = json_decode($tagJSON, true);
+        if(empty($parsed) || !is_array($parsed)) {
+            return [];
+        }
+        return $parsed;
+    }
+
+    private function parseOrderString($orderJSON) {
+        $allowedColumns = [
+            'id',
+            'fileSize',
+            'timeStamp',
+            'totalFrames',
+        ];
+        $allowedOrder = [
+            'ASC',
+            'DESC'
+        ];
+        $default = ['id' => 'DESC'];
+
+        if(empty($orderJSON) || !is_string($orderJSON)) {
+            return $default;
+        }
+        $parsed = json_decode($orderJSON, true);
+        if(empty($parsed) || !is_array($parsed)) {
+            return $default;
+        }
+
+        $order = [];
+        foreach($parsed as $entry) {
+            if(empty($entry['column']) || empty($entry['order'])) {
+                continue;
+            }
+
+            if(!in_array($entry['column'], $allowedColumns, true)) {
+                continue;
+            }
+
+            if(!in_array($entry['order'], $allowedOrder, true)) {
+                continue;
+            }
+
+            $order[$entry['column']] = $entry['order'];
+        }
+
+        if(empty($order)) {
+            return $default;
+        }
+
+        return $order;
+    }
+
     public function getReplayList() {
         $list = null;
-        if(empty($_GET['tag'])) {
+        $tags = $this->parseTagString($_GET['tags']);
+
+        if(empty($tags)) {
             $list = $this->database->select('new_replays', [
                 'id'
             ], [
-                'deletedDate' => null
+                'deletedDate' => null,
+                'ORDER' => $this->parseOrderString($_GET['order'])
             ]);
         }
         else {
@@ -132,7 +191,11 @@ class RA3Replay {
             ], [
                 'new_replays.id (id)'
             ], [
-                'deletedDate' => null
+                'deletedDate' => null,
+                'tags' => $tags,
+                'GROUP' => 'id',
+                'ORDER' => $this->parseOrderString($_GET['order'])
+                
             ]);
         }
         return [
