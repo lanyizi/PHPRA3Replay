@@ -414,11 +414,11 @@ class RA3Replay {
         $footerMagic = 'RA3 REPLAY FOOTER';
         $footerMagicLength = strlen($footerMagic);
         if(substr($footer, 0, $footerMagicLength) === $footerMagic) {
-            $totalFramesHolder = substr($replayData, 4, 4);
+            $totalFramesHolder = substr($footer, $footerMagicLength, 4);
             if($totalFramesHolder !== false && strlen($totalFramesHolder) === 4) {
-                $totalFrames = unpack('V', substr($replayData, 4, 4))[1];
+                $totalFrames = unpack('V', $totalFramesHolder)[1];
             }
-        }        
+        }
 
         return [
             'fileSize' => strlen($replayData),
