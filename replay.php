@@ -192,7 +192,7 @@ class RA3Replay {
                 'new_replays.id (id)'
             ], [
                 'deletedDate' => null,
-                'tags' => $tags,
+                'tag' => $tags,
                 'GROUP' => 'id',
                 'ORDER' => $this->parseOrderString($_GET['orders'])
                 
@@ -204,7 +204,7 @@ class RA3Replay {
     }
 
     public function getTagList() {
-        $list = $this->database->select('new_replays', [
+        $list = $this->database->select('new_replays_tags', [
             'tag'
         ], [
             'GROUP' => 'tag'
