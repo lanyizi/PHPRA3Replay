@@ -74,6 +74,10 @@
     display: inline-block;
 }
 
+.img-container {
+    position: relative;
+}
+
 .img-container:after {
   content: "";
   display: block;
