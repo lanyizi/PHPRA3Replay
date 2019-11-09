@@ -81,7 +81,7 @@
     position: relative;
 }
 
-.img-container:after {
+.img-container::after {
   content: "";
   display: block;
   padding-bottom: 100%; /* The padding depends on the width, not on the height, so with a padding-bottom of 100% you will get a square */
@@ -103,6 +103,7 @@
     position: relative;
     display: flex;
     align-items: center;
+    font-family: 'Microsoft YaHei', Arial, Helvetica, sans-serif;
 }
 
 .replay-item-compact .id-container .replay-id {
@@ -117,13 +118,24 @@
     width: 35%;
 }
 
+.replay-item-compact .replay-players table {
+    width: 100%;
+    table-layout: fixed;
+}
+
 .replay-item-compact .replay-players .replay-player {
     overflow: hidden;
-    vertical-align: middle;
+    white-space: nowrap;
+    font-size: 90%;
 }
 
 .replay-item-compact .replay-players .replay-player-faction {
-    width: 1.5em;
+    width: 1.7em;
+    vertical-align: middle;
+}
+
+.replay-item-compact .replay-players .replay-player-faction::after {
+    padding-bottom: 60%;
 }
 
 .replay-item-compact .replay-information {
@@ -136,11 +148,12 @@
 }
 
 .replay-item-compact .replay-show-full {
-    width: 7.5%;
+    width: 10%;
 }
 
 .replay-item-compact .replay-download {
-    width: 12.5%;
+    width: 10%;
+    text-align: center;
 }
 
 </style>
