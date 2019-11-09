@@ -316,9 +316,15 @@ module.exports = {
             return this.replay.fileName;
         },
         replaySaver() {
-            return this.replay.players
+            const saverContainer = this.replay.players
             .map(team => team.filter(player => player.isSaver).map(player => player.name))
             .filter(team => team.length > 0);
+            
+            if(saverContainer.length == 1 && saverContainer[0].length == 1) {
+                return saverContainer[0][0];
+            }
+
+            return '未知玩家';
         }
     },
 }
