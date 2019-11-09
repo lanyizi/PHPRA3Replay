@@ -60,7 +60,7 @@
                 <input id="currentPage" class="short-input" type="number" v-model="clampedOneBasedCurrentPage"/>
                 <label for="currentPage">页</label>
                 
-                <div v-for="replay in replayList" :key="replay.id">
+                <div v-for="replay in currentPageReplays" :key="replay.id">
                     <replay-item :replay-id="replay.id" 
                         faction-icon-format="/replays/ra3images/v1/factions/*.png"
                         map-image-format="/replays/ra3images/v1/maps/*_art.png"
@@ -195,8 +195,9 @@
                     },
                 },
                 computed: {
-                    currentReplays() {
-                        return this.replayList.slice(this.currentPage * this.replaysPerPage, this.replaysPerPage);
+                    currentPageReplays() {
+                        const begin = this.currentPage * this.replaysPerPage;
+                        return this.replayList.slice(begin, begin + this.replaysPerPage);
                     },
                     clampedOneBasedCurrentPage: {
                         get() { 
