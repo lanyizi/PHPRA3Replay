@@ -253,7 +253,7 @@ class RA3Replay {
             ]);
 
             $replayData['players'] = json_decode($replayData['players'], true);
-            $replayData['url'] = $this->getFinalReplayName($id);
+            $replayData['url'] = $this->getWebReplayPath($id);
             $replayData['tags'] = array_column($tags, 'tag');
         }
 
@@ -525,6 +525,10 @@ class RA3Replay {
 
     private function getFinalReplayName($id) {
         return $this->replayDirectory . '/' . $id . '.RA3Replay';
+    }
+
+    private function getWebReplayPath($id) {
+        return $this->webReplayDirectory . '/' . $id . '.RA3Replay';
     }
 }
 
