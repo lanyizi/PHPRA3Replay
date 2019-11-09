@@ -45,9 +45,12 @@
                 <label for="replaysPerPage">每页显示</label>
                 <input id="replaysPerPage" type="number" v-model="replaysPerPage" class="short-input"/>
                 <label for="replaysPerPage">个录像</label>
-                <label for="currentPage" class="right">转到第</label>
-                <input id="currentPage" type="number" v-model="currentPage" class="short-input right"/>
-                <label for="currentPage" class="right">页</label>
+                <span class="right">
+                    <label for="currentPage">转到第</label>
+                    <input id="currentPage" type="number" v-model="currentPage" class="short-input"/>
+                    <label for="currentPage">页</label>
+                </span>
+                
                 <div v-for="replay in replayList" :key="replay.id">
                     <replay-item :replay-id="replay.id" 
                         faction-icon-format="/replays/ra3images/v1/factions/*.png"
@@ -99,7 +102,7 @@
                         complexOrderTags: [],
                         complexUploadTags: [],
                         availableComplexFilterTags: [],
-                        selectedOrder: null,
+                        selectedOrder: '',
                         orderOptions: [
                             { text: '上传时间降序', value: { column: 'id', order: 'DESC' } },
                             { text: '上传时间升序', value: { column: 'id', order: 'ASC' } },
