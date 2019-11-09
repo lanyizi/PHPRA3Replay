@@ -31,6 +31,9 @@
             textarea {
                 width: 500px;
             }
+            .upload-status-error {
+                color: red;
+            }
         </style>
     </head>
     <body>
@@ -38,12 +41,12 @@
             <vue-tags-input
                 class="inline-block"
                 placeholder="过滤录像类型"
-                add-only-from-autocomplete
-                autocomplete-min-length="0"
                 v-model="filterTag"
                 :tags="complexFilterTags"
                 :autocomplete-items="availableComplexFilterTags"
                 @tags-changed="newTags => { complexFilterTags = newTags; loadReplays(); }"
+                :add-only-from-autocomplete="true"
+                :autocomplete-min-length="0"
             >
             </vue-tags-input>
             <select id="sortMethod" class="inline-block high-input-as-tag-input" v-model="selectedOrder" @change="loadReplays">
@@ -80,11 +83,10 @@
                 <vue-tags-input
                     class="inline-block"
                     placeholder="上传录像类型"
-                    add-only-from-autocomplete
-                    autocomplete-min-length="0"
                     v-model="uploadTag"
                     :tags="complexUploadTags"
                     :autocomplete-items="availableComplexFilterTags"
+                    :autocomplete-min-length="0"
                     @tags-changed="newTags => complexUploadTags = newTags"
                 >
                 </vue-tags-input>
@@ -94,7 +96,7 @@
                 <label for="upload">选择录像文件：</label>
                 <input type="file" id="upload" ref="upload" />
                 <button @click="uploadReplay">上传录像</button>
-                <p>{{ uploadStatus }}</p>
+                <p :class="uploadStatusClasses">{{ uploadStatus }}</p>
             </div>
             
         </div>
@@ -109,6 +111,7 @@
                         title: '',
                         description: '',
                         uploadStatus: '',
+                        uploadStatusClasses: [],
                         replayList: [],
                         filterTag: '',
                         orderTag: '',
@@ -160,51 +163,67 @@
                             this.availableComplexFilterTags = result;
                         })
                     },
-                    uploadReplay() {
-                        const uploadTags = this.processComplexTags(this.complexUploadTags);
-                        if(uploadTags.every(tag => !this.requiredTags.includes(tag))) {
-                            this.uploadStatus = '没有选择必选的标签（' + this.requiredTags.join('，') + '）';
-                            return;
+                    setUploadStatus(text) {
+                        this.uploadStatus = text;
+                        this.uploadStatusClasses = [];
+                    },
+                    setUploadError(text) {
+                        this.uploadStatus = text;
+                        this.uploadStatusClasses = ['upload-status-error'];
+                    },
+                    uploadReplayBytes(uint8Array) {
+                        this.setUploadStatus('正在准备...');
+                        let binaryString = '';
+                        const bytes = uint8Array;
+                        const length = bytes.byteLength;
+                        for (var i = 0; i < length; ++i) {
+                            binaryString += String.fromCharCode(bytes[i]);
                         }
+                        const base64 = btoa(binaryString);
+                        this.setUploadStatus('正在上传...');
 
-                        const files = this.$refs.upload.files;
-                        this.uploadStatus = '正在读取...';
-                        if(files.length == 0) {
-                            this.uploadStatus = '没有选择录像文件';
-                            return;
-                        }
-                        const file = files.item(0);
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                            this.uploadStatus = '正在准备...';
-                            let binaryString = '';
-                            const bytes = new Uint8Array(reader.result);
-                            const length = bytes.byteLength;
-                            for (var i = 0; i < length; ++i) {
-                                binaryString += String.fromCharCode(bytes[i]);
+                        fetch('/replays/replay.php?do=uploadReplay', {
+                            method: 'post',
+                            body: JSON.stringify({
+                                fileName: file.name,
+                                data: base64,
+                                title: this.title,
+                                description: this.description,
+                                tags: uploadTags
+                            }),
+                            headers: {
+                                'content-type': 'application/json'
                             }
-                            const base64 = btoa(binaryString);
-                            self.uploadStatus = '正在上传...';
-                            fetch('/replays/replay.php?do=uploadReplay', {
-                                method: 'post',
-                                body: JSON.stringify({
-                                    fileName: file.name,
-                                    data: base64,
-                                    title: this.title,
-                                    description: this.description,
-                                    tags: uploadTags
-                                }),
-                                headers: {
-                                    'content-type': 'application/json'
-                                }
-                            })
-                            .then(response => response.json())
-                            .then(json => { 
-                                self.uploadStatus = '处理结果：' + JSON.stringify(json);  
-                                self.loadReplays();
-                            });
-                        };
-                        reader.readAsArrayBuffer(file);
+                        })
+                        .then(response => response.json())
+                        .then(json => { 
+                            this.setUploadStatus('处理结果：' + JSON.stringify(json));
+                            this.loadReplays();
+                        })
+                        .catch(reason => {
+                            this.setUploadError('失败：' + reason);
+                        })
+                    },
+                    uploadReplay() {
+                        try {
+                            const uploadTags = this.processComplexTags(this.complexUploadTags);
+                            if(uploadTags.every(tag => !this.requiredTags.includes(tag))) {
+                                throw '请选择一个必选的标签（' + this.requiredTags.join('，') + '）';
+                            }
+                            const files = this.$refs.upload.files;
+                            this.setUploadStatus('正在读取...');
+                            if(files.length == 0) {
+                                throw '没有选择录像文件';
+                            }
+                            const file = files.item(0);
+                            const reader = new FileReader();
+                            reader.onloadend = () => this.uploadReplayBytes(new Uint8Array(reader.result));
+                            reader.readAsArrayBuffer(file);
+                        }
+                        catch(e) {
+                            const head = (e instanceof String) ? '' : '错误：'
+                            this.setUploadError(head + e);
+                        }
                     },
                 },
                 computed: {
