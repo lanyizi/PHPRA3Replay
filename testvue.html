@@ -30,6 +30,7 @@
             }
             textarea {
                 width: 500px;
+                height: 250px;
             }
             .upload-status-error {
                 color: red;
@@ -221,7 +222,7 @@
                             reader.readAsArrayBuffer(file);
                         }
                         catch(e) {
-                            const head = (e instanceof String) ? '' : '错误：'
+                            const head = (typeof(e) === 'string') ? '' : '错误：'
                             this.setUploadError(head + e);
                         }
                     },
