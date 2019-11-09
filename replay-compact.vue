@@ -2,10 +2,10 @@
 <div class="replay-item-compact">
     <div class="id-container inline-block">
         <span class="replay-id">
-            {{ replayId }}
+            #{{ replayId }}
         </span>
         <span v-if="replay.newVerion != null" class="replay-id">
-            -> {{ replay.newVerion }}
+            -> #{{ replay.newVerion }}
         </span>
     </div>
 
@@ -62,7 +62,9 @@
         下载录像
     </a>
     <div class="replay-description inline-block" v-if="expanded">
-        {{ replay.description }}            
+        {{ replay.description }} <br/>
+        地图名称：{{ replay.mapName }} <br/>
+        玩家列表：{{ replay.players.map(team => team.join(', ')).join(' vs ') }}
     </div>
 </div>
 </template>
@@ -106,6 +108,11 @@
     font-family: 'Microsoft YaHei', Arial, Helvetica, sans-serif;
 }
 
+.replay-item-compact .id-container {
+    width: 7.5%;
+    padding-right: 1em;
+}
+
 .replay-item-compact .id-container .replay-id {
     float: right;
 }
@@ -115,7 +122,7 @@
 }
 
 .replay-item-compact .replay-players {
-    width: 35%;
+    width: 32.5%;
 }
 
 .replay-item-compact .replay-players table {

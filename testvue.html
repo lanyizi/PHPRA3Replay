@@ -21,6 +21,7 @@
             }
             .replay-item-compact {
                 border-bottom: 1px solid gray;
+                max-width: 1366px;
             }
         </style>
     </head>
@@ -45,7 +46,7 @@
                 </option>
             </select>
             <a href="#upload" class="right">上传录像</a>
-            <div class="replay-container" style="width: 70%">
+            <div class="replay-container">
                 <label for="replaysPerPage">每页显示</label>
                 <input id="replaysPerPage" class="short-input" type="number" v-model="replaysPerPage" />
                 <label for="replaysPerPage">个录像</label>
@@ -69,6 +70,7 @@
                 上传录像<br/>
                 <input type="text" v-model="title" placeholder="标题" />
                 <vue-tags-input
+                    class="inline-block"
                     placeholder="上传录像类型"
                     add-only-from-autocomplete
                     v-model="uploadTag"
