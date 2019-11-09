@@ -61,11 +61,18 @@ class RA3Replay {
      */
     private $replayDirectory;
 
+    /**
+     * @var string
+     */
+    private $webReplayDirectory;
+
     public function __construct($input, Medoo $database) {
         $this->input = $input;
         $this->database = $database;
         # special case on altervista.org: cannot use DOCUMENT_ROOT
-        $this->replayDirectory = '/membri/lanyi/dynamic/PHPRA3Replay/uploadedReplays';
+
+        $this->webReplayDirectory = '/dynamic/PHPRA3Replay/uploadedReplays';
+        $this->replayDirectory = '/membri/lanyi'.$this->webReplayDirectory;
 
         $this->database->create('new_replays',  [
             'id' => [
