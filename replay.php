@@ -322,6 +322,7 @@ class RA3Replay {
                     return [ 'replayId' => $id, 'tag' => $tag ];
                 }, $tags) : [];
                 if(!empty($tags)) {
+                    $tags = array_unique($tags);
                     $database->insert('new_replays_tags', array_values($tags));
                 }
 
