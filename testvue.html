@@ -32,9 +32,9 @@
                 @tags-changed="newTags => { complexFilterTags = newTags; loadReplays(); }"
             >
             </vue-tags-input>
-            <select id="sortMethod" v-model="selectedOrder">
-                <option disabled :value="orderOptions[0].value">
-                    {{ 排序方式 }}
+            <select id="sortMethod" v-model="selectedOrder" @change="loadReplays">
+                <option disabled value="">
+                    排序方式
                 </option>
                 <option v-for="option in orderOptions" :value="option.value">
                     {{ option.text }}
@@ -135,7 +135,9 @@
                         .then(response => response.json())
                         .then(json => {
                             const defaultTags = ['1v1', '3v3', 'CMS', '其他'];
-                            this.availableComplexFilterTags = json.tags.concat(defaultTags).map(x => { return { text: x.tag }; });
+                            const result = json.tags.concat(defaultTags).map(x => { return { text: x.tag }; });
+                            console.log(result);
+                            this.availableComplexFilterTags = result;
                         })
                     },
                     uploadReplay() {
