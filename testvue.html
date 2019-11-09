@@ -135,8 +135,7 @@
                         .then(response => response.json())
                         .then(json => {
                             const defaultTags = ['1v1', '3v3', 'CMS', '其他'];
-                            const result = json.tags.concat(defaultTags).map(x => { return { text: x.tag }; });
-                            console.log(result);
+                            const result = json.tags.map(x => x.tag).concat(defaultTags).map(x => { return { text: x }; });
                             this.availableComplexFilterTags = result;
                         })
                     },
