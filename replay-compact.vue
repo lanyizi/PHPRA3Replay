@@ -2,10 +2,16 @@
 <div class="replay-item-compact">
     <div class="id-container inline-block">
         <span class="replay-id">
-            #{{ replayId }}
+            <span class="replay-id-hashtag">
+                #
+            </span>
+            {{ replayId }}
         </span>
-        <span v-if="replay.newVerion != null" class="replay-id">
-            -> #{{ replay.newVerion }}
+        <span v-if="replay.newVersion != null" class="replay-id">
+            <span class="replay-id-hashtag">
+               → #
+            </span>
+            {{ replay.newVersion }}
         </span>
     </div>
 
@@ -117,6 +123,12 @@
     float: right;
 }
 
+.replay-item-compact .id-container .replay-id .replay-id-hashtag {
+    vertical-align: baseline;
+    font-size: 70%;
+    color: #404040;
+}
+
 .replay-item-compact .replay-minimap {
     width: 7.5%;
 }
@@ -155,8 +167,8 @@
 
 .replay-item-compact .replay-information .replay-date,
 .replay-item-compact .replay-information .replay-duration {
-    font-size: 90%;
-    color: #222222;
+    font-size: 85%;
+    color: #404040;
 }
 
 .replay-item-compact .replay-description {
@@ -191,7 +203,7 @@ module.exports = {
                 url: '',
                 totalFrames: null,
                 title: null,
-                newVerion: null,
+                newVersion: null,
             },
             expanded: false
         };

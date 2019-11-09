@@ -28,6 +28,9 @@
                 border-bottom: 1px solid gray;
                 max-width: 1280px;
             }
+            textarea {
+                width: 500px;
+            }
         </style>
     </head>
     <body>
@@ -71,7 +74,7 @@
             </div>
             
             <div id="upload">
-                上传录像<br/>
+                <h2>上传录像</h2>
                 <input class="high-input-as-tag-input" type="text" v-model="title" placeholder="标题" />
                 <vue-tags-input
                     class="inline-block"
