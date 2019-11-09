@@ -19,9 +19,14 @@
             .short-input {
                 width: 3em;
             }
+            .high-input-as-tag-input {
+                padding: 8px 9px;
+                border: 1px solid gray;
+                vertical-align: bottom;
+            }
             .replay-item-compact {
                 border-bottom: 1px solid gray;
-                max-width: 1366px;
+                max-width: 1280px;
             }
         </style>
     </head>
@@ -37,7 +42,7 @@
                 @tags-changed="newTags => { complexFilterTags = newTags; loadReplays(); }"
             >
             </vue-tags-input>
-            <select id="sortMethod" class="inline-block" v-model="selectedOrder" @change="loadReplays">
+            <select id="sortMethod" class="inline-block high-input-as-tag-input" v-model="selectedOrder" @change="loadReplays">
                 <option disabled value="">
                     排序方式
                 </option>
@@ -48,13 +53,12 @@
             <a href="#upload" class="right">上传录像</a>
             <div class="replay-container">
                 <label for="replaysPerPage">每页显示</label>
-                <input id="replaysPerPage" class="short-input" type="number" v-model="replaysPerPage" />
+                <input id="replaysPerPage" class="short-input" type="number" v-model="clampedReplaysPerPage" />
                 <label for="replaysPerPage">个录像</label>
-                <span class="right">
-                    <label for="currentPage">转到第</label>
-                    <input id="currentPage" class="short-input" type="number" v-model="currentPage"/>
-                    <label for="currentPage">页</label>
-                </span>
+                &nbsp;
+                <label for="currentPage">转到第</label>
+                <input id="currentPage" class="short-input" type="number" v-model="clampedOneBasedCurrentPage"/>
+                <label for="currentPage">页</label>
                 
                 <div v-for="replay in replayList" :key="replay.id">
                     <replay-item :replay-id="replay.id" 
@@ -68,7 +72,7 @@
             
             <div id="upload">
                 上传录像<br/>
-                <input type="text" v-model="title" placeholder="标题" />
+                <input class="high-input-as-tag-input" type="text" v-model="title" placeholder="标题" />
                 <vue-tags-input
                     class="inline-block"
                     placeholder="上传录像类型"
@@ -191,7 +195,26 @@
                     },
                 },
                 computed: {
-                    
+                    currentReplays() {
+                        return this.replayList.slice(this.currentPage * this.replaysPerPage, this.replaysPerPage);
+                    },
+                    clampedOneBasedCurrentPage: {
+                        get() { 
+                            return this.currentPage + 1;
+                        },
+                        set(value) {
+                            const maxPage = Math.ceil(this.replayList.length / this.replaysPerPage);
+                            this.currentPage = Math.min(Math.max(value - 1, 0), maxPage);
+                        }
+                    },
+                    clampedReplaysPerPage: {
+                        get() {
+                            return this.replaysPerPage;
+                        },
+                        set(value) {
+                            this.replaysPerPage = Math.max(value, 1);
+                        }
+                    }
                 },
             });
         </script>

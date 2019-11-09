@@ -47,11 +47,11 @@
             </span>
         </div>
         <div>
-            <span class="replay-duration">
-                录像长度 {{ duration }}
-            </span>
             <span class="replay-date">
                 录像日期 {{ date }}
+            </span>
+            <span class="replay-duration">
+                录像长度 {{ duration }}
             </span>
         </div>
     </div>
@@ -64,7 +64,7 @@
     <div class="replay-description inline-block" v-if="expanded">
         {{ replay.description }} <br/>
         地图名称：{{ replay.mapName }} <br/>
-        玩家列表：{{ replay.players.map(team => team.join(', ')).join(' vs ') }}
+        玩家列表：{{ replay.players.map(team => team.map(player => player.name).join(', ')).join(' vs ') }}
     </div>
 </div>
 </template>
@@ -73,7 +73,6 @@
 * {
     box-sizing: border-box;
 }
-
 
 .inline-block {
     display: inline-block;
@@ -105,11 +104,12 @@
     position: relative;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     font-family: 'Microsoft YaHei', Arial, Helvetica, sans-serif;
 }
 
 .replay-item-compact .id-container {
-    width: 7.5%;
+    width: 5%;
     padding-right: 1em;
 }
 
@@ -146,12 +146,22 @@
 }
 
 .replay-item-compact .replay-information {
-    width: 32.5%;
+    width: 35%;
+}
+
+.replay-item-compact .replay-information .replay-title {
+    font-weight: bold;
+}
+
+.replay-item-compact .replay-information .replay-date,
+.replay-item-compact .replay-information .replay-duration {
+    font-size: 90%;
+    color: #222222;
 }
 
 .replay-item-compact .replay-description {
     width: 100%;
-    overflow: scroll;
+    padding-left: 5%;
 }
 
 .replay-item-compact .replay-show-full {
@@ -188,15 +198,18 @@ module.exports = {
     },
     props: ['replayId', 'defaultMapImagePath', 'mapImageFormat', 'factionIconFormat'],
     mounted() {
-        fetch('/replays/replay.php?do=getReplayInformation&id=' + this.replayId)
+        this.fetchData(this.replayId);
+    },
+    methods: {
+        fetchData(replayId) {
+            fetch('/replays/replay.php?do=getReplayInformation&id=' + replayId)
             .then(response => response.json())
             .then(parsed => {
                 if (parsed) {
                     Object.assign(this.replay, parsed.replay);
                 }
             });
-    },
-    methods: {
+        },
         onMapPathFailed() {
             if (this.replay.mapPath != this.defaultMapImagePath) {
                 this.replay.mapPath = this.defaultMapImagePath;
@@ -211,6 +224,13 @@ module.exports = {
             }
         },
         padTwoDigits(x) { return x < 10 ? '0' + x.toString() : x.toString(); }
+    },
+    watch: {
+        replayId(newValue, oldValue) {
+            if(newValue != oldValue) {
+                this.fetchData(newValue);
+            }
+        }
     },
     computed: {
         mapImagePath() {
