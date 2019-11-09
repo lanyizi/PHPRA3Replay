@@ -16,7 +16,7 @@
     <div class="replay-players inline-block">
         <table>
             <tr v-for="(team, i) in nonObserverTeams" :key="i">
-                <td v-for="(player, j) in team" :key="j">
+                <td class="replay-player" v-for="(player, j) in team" :key="j">
                     <div class="replay-player-faction img-container inline-block">
                         <img :src="player.factionIcon" />
                     </div>
@@ -24,7 +24,7 @@
                 </td>
             </tr>
             <tr>
-                <td v-for="(obs, i) in observers" :key="i">
+                <td class="replay-player" v-for="(obs, i) in observers" :key="i">
                     <div class="replay-player-faction img-container inline-block">
                         <img :src="obs.factionIcon" />
                     </div>
@@ -36,9 +36,9 @@
 
     <div class="replay-information inline-block">
         <div>
-            <span v-for="tag in replay.tags" :key="tag" class="replay-tag">
+            <!--<span v-for="tag in replay.tags" :key="tag" class="replay-tag">
                 {{ tag }};
-            </span>
+            </span>-->
             <span class="replay-title">
                 {{ title }}
             </span>
@@ -48,15 +48,15 @@
         </div>
         <div>
             <span class="replay-duration">
-                {{ duration }}
+                录像长度 {{ duration }}
             </span>
             <span class="replay-date">
-                {{ date }}
+                录像日期 {{ date }}
             </span>
         </div>
     </div>
     <button v-if="replayDescriptionOverflowing" class="replay-show-full" @click="expanded = !expanded">
-        ...
+        显示说明
     </button>
     <a :href="replay.url" :download="downloadFileName" class="replay-download inline-block">
         下载录像
@@ -71,6 +71,7 @@
 * {
     box-sizing: border-box;
 }
+
 
 .inline-block {
     display: inline-block;
@@ -100,7 +101,8 @@
 
 .replay-item-compact {
     position: relative;
-    vertical-align: middle;
+    display: flex;
+    align-items: center;
 }
 
 .replay-item-compact .id-container .replay-id {
@@ -113,7 +115,11 @@
 
 .replay-item-compact .replay-players {
     width: 35%;
+}
+
+.replay-item-compact .replay-players .replay-player {
     overflow: hidden;
+    vertical-align: middle;
 }
 
 .replay-item-compact .replay-players .replay-player-faction {

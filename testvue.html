@@ -9,6 +9,9 @@
             .right {
                 float: right;
             }
+            .inline-block {
+                display: inline-block;
+            }
             .replay-container {
                 border-top: 1px solid gray;
                 border-bottom: 1px solid gray;
@@ -24,6 +27,7 @@
     <body>
         <div id="app">
             <vue-tags-input
+                class="inline-block"
                 placeholder="过滤录像类型"
                 add-only-from-autocomplete
                 v-model="filterTag"
@@ -32,7 +36,7 @@
                 @tags-changed="newTags => { complexFilterTags = newTags; loadReplays(); }"
             >
             </vue-tags-input>
-            <select id="sortMethod" v-model="selectedOrder" @change="loadReplays">
+            <select id="sortMethod" class="inline-block" v-model="selectedOrder" @change="loadReplays">
                 <option disabled value="">
                     排序方式
                 </option>
@@ -43,11 +47,11 @@
             <a href="#upload" class="right">上传录像</a>
             <div class="replay-container" style="width: 70%">
                 <label for="replaysPerPage">每页显示</label>
-                <input id="replaysPerPage" type="number" v-model="replaysPerPage" class="short-input"/>
+                <input id="replaysPerPage" class="short-input" type="number" v-model="replaysPerPage" />
                 <label for="replaysPerPage">个录像</label>
                 <span class="right">
                     <label for="currentPage">转到第</label>
-                    <input id="currentPage" type="number" v-model="currentPage" class="short-input"/>
+                    <input id="currentPage" class="short-input" type="number" v-model="currentPage"/>
                     <label for="currentPage">页</label>
                 </span>
                 
