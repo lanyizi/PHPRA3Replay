@@ -90,7 +90,7 @@ class RA3Replay {
             'players'       => [ 'TEXT',    'NOT NULL' ],
             'seed'          => [ 'INT',     'NOT NULL' ],
             'timeStamp'     => [ 'BIGINT',  'NOT NULL' ],
-            'uploadedDate'  => [ 'BIGINT',  'NOT NULL' ],
+            'uploadDate'    => [ 'BIGINT',  'NOT NULL' ],
             'downloads'     => [ 'INT',     'NOT NULL' ],
             'totalFrames'   => [ 'INT' ],
             'title'         => [ 'TEXT' ],
@@ -301,6 +301,7 @@ class RA3Replay {
             ]);
 
             $replayData['players'] = json_decode($replayData['players'], true);
+            $replayData['url'] = $this->getWebReplayName($id);
             $replayData['tags'] = array_column($tags, 'tag');
         }
 
@@ -429,21 +430,14 @@ class RA3Replay {
         }
     }
     
-    public function downloadReplay() {
+    public function updateDownloadCounter() {
         $id = $_GET['id'];
-        if(!$this->database->has('new_replays', [
-            'id' => $id,
-            'isPartial' => false,
-            'deletedDate' => null
-        ])) {
-            header('Location: not_found.php');
-        }
 
-        $fileName = $this->getFinalReplayName($id);
-        header('Content-disposition: attachment');
-        header('Content-type: application/octet-stream');
-        header('Content-Length: '.filesize($fileName));
-        readfile($fileName);
+        $this->database->update('new_replays', [
+            'downloads[+]' => 1
+        ], [
+            'id' => $id
+        ]);
     }
 
     function test() {
@@ -591,6 +585,10 @@ class RA3Replay {
 
     private function getFinalReplayName($id) {
         return $this->replayDirectory . '/' . $id . '.RA3Replay';
+    }
+
+    private function getWebReplayName($id) {
+        return $this->webReplayDirectory . '/' . $id . '.RA3Replay';
     }
 }
 

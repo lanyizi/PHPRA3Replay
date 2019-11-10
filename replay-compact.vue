@@ -69,9 +69,9 @@
         {{ expanded ? '收起' : '显示' }}说明
     </button>
     <a 
-        :href="'/replays/replay.php?downloadReplay&id=' + replayId" 
+        :href="replay.url" 
         :download="downloadFileName" 
-        @click="replay.downloads += 1"
+        @click="alert('test'); fetch('replays/replay.php?do=updateDownloadCounter&id=' + replayId); replay.downloads += 1"
         class="replay-download inline-block">
         <div class="replay-download-container">
             <div class="replay-download-main">
