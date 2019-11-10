@@ -211,6 +211,7 @@ class RA3Replay {
                 $noTagListString .= $current;
                 $map[$current] .= $notag;
             }
+            $noTagWhere = empty($notag) ? '1' : "<tag> IN ($noTagListString)";
 
             foreach($tags as $i => $tag) {
                 if($i != 0) {
@@ -220,6 +221,7 @@ class RA3Replay {
                 $tagListString .= $current;
                 $map[$current] .= $tag;
             }
+            $tagWhere = empty($notag) ? '1' : "<tag> IN ($tagListString)";
 
             // we can assume parsed order array is safe
             $orderString = '';
@@ -228,24 +230,22 @@ class RA3Replay {
                     $orderString .= ', ';
                 }
                 else {
-                    $orderString = 'ORDER BY';
+                    $orderString = 'ORDER BY ';
                 }
                 $orderString .= "$column $order";
             }
 
             $queryString = 
                 "SELECT <new_replays.id> AS id FROM <new_replays> 
-                 INNER JOIN <new_replays_tags> ON <new_replays.id> = <new_replays_tags.id>
+                 INNER JOIN <new_replays_tags> ON <new_replays.id> = <new_replays_tags.replayId>
                  WHERE 
                     <new_replays.deletedDate> = NULL
                     AND
                     (<id> NOT IN
-                        (SELECT <new_replays_tags.id> FROM <new_replays_tags> 
-                         WHERE <tag> IN ($noTagListString) GROUP BY <new_replays_tags.id>)
+                        (SELECT <new_replays_tags.replayId> FROM <new_replays_tags> 
+                         $noTagWhere GROUP BY <new_replays_tags.replayId>)
                     AND
-                    (:isTagEmpty
-                     OR
-                     <new_replays_tags.tag> IN ($tagListString)
+                    ($tagWhere
                  $orderString 
                  GROUP BY id
                  ";
