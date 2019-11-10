@@ -71,7 +71,7 @@
     <a 
         :href="replay.url" 
         :download="downloadFileName" 
-        @click="alert('test'); fetch('replays/replay.php?do=updateDownloadCounter&id=' + replayId); replay.downloads += 1"
+        @click="updateDownloads"
         class="replay-download inline-block">
         <div class="replay-download-container">
             <div class="replay-download-main">
@@ -241,6 +241,8 @@ module.exports = {
                 mapPath: '',
                 players: [],
                 timeStamp: '',
+                uploadDate: null,
+                downloads: null,
                 url: '',
                 totalFrames: null,
                 title: null,
@@ -290,6 +292,10 @@ module.exports = {
             .join(':');
 
             return dateString + ' ' + timeString;
+        },
+        updateDownloads() {
+            fetch('replays/replay.php?do=updateDownloadCounter&id=' + this.replayId); 
+            this.replay.downloads += 1;
         }
     },
     watch: {
@@ -353,7 +359,7 @@ module.exports = {
             return this.getDateString(this.replay.timeStamp);
         },
         uploadDate() {
-            if(!this.replay.uploadDate) {
+            if(!this.replay.uploadDate || this.replay.uploadDate == '0') {
                 return '大概是2019-11-10之前吧';
             }
             return this.getDateString(this.replay.uploadDate);
