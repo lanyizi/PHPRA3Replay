@@ -221,7 +221,7 @@ class RA3Replay {
                 $tagListString .= $current;
                 $map[$current] .= $tag;
             }
-            $tagWhere = empty($notag) ? '1' : "<tag> IN ($tagListString)";
+            $tagWhere = empty($tag) ? '1' : "<tag> IN ($tagListString)";
 
             // we can assume parsed order array is safe
             $orderString = '';
