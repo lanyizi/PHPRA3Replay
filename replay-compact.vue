@@ -208,7 +208,7 @@
 .replay-item-compact .replay-download .replay-download-container {
     position:  relative;
     background: darkslategrey;
-    padding: 1em 0;
+    margin: 1em 0;
 }
 
 .replay-item-compact .replay-download .replay-download-container:hover {
