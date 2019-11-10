@@ -134,7 +134,7 @@ class RA3Replay {
         if(empty($parsed) || !is_array($parsed)) {
             return [];
         }
-        return $parsed;
+        return array_values($parsed);
     }
 
     private function parseOrderString($orderJSON) {
@@ -204,32 +204,33 @@ class RA3Replay {
             $map = ['isTagEmpty' => empty($tags)];
             foreach($notags as $i => $notag) {
                 if($i != 0) {
-                    $noTagListString += ', ';
+                    $noTagListString .= ', ';
                 }
+                // we can assume index $i is safe because it comes from array_values
                 $current = ":noTag$i";
-                $noTagListString += $current;
-                $map[$current] += $notag;
+                $noTagListString .= $current;
+                $map[$current] .= $notag;
             }
 
             foreach($tags as $i => $tag) {
                 if($i != 0) {
-                    $tagListString += ', ';
+                    $tagListString .= ', ';
                 }
                 $current = ":tag$i";
-                $tagListString += $current;
-                $map[$current] += $tag;
+                $tagListString .= $current;
+                $map[$current] .= $tag;
             }
 
             // we can assume parsed order array is safe
             $orderString = '';
             foreach($this->parseOrderString($_GET['orders']) as $column => $order) {
                 if(!empty($orderString)) {
-                    $orderString += ', ';
+                    $orderString .= ', ';
                 }
                 else {
                     $orderString = 'ORDER BY';
                 }
-                $orderString += "$column $order";
+                $orderString .= "$column $order";
             }
 
             $queryString = 
