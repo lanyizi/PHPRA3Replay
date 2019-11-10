@@ -211,7 +211,7 @@ class RA3Replay {
                 $noTagListString .= $current;
                 $map[$current] .= $notag;
             }
-            $noTagWhere = empty($notag) ? '1' : "<tag> IN ($noTagListString)";
+            $noTagWhere = empty($notag) ? '0' : "<tag> IN ($noTagListString)";
 
             foreach($tags as $i => $tag) {
                 if($i != 0) {
@@ -232,22 +232,22 @@ class RA3Replay {
                 else {
                     $orderString = 'ORDER BY ';
                 }
-                $orderString .= "$column $order";
+                $orderString .= "<$column> $order";
             }
 
             $queryString = 
                 "SELECT <new_replays.id> AS id FROM <new_replays> 
                  INNER JOIN <new_replays_tags> ON <new_replays.id> = <new_replays_tags.replayId>
                  WHERE 
-                    <new_replays.deletedDate> = NULL
+                    <new_replays.deletedDate> is NULL
                     AND
-                    (<id> NOT IN
+                    <id> NOT IN
                         (SELECT <new_replays_tags.replayId> FROM <new_replays_tags> 
-                         $noTagWhere GROUP BY <new_replays_tags.replayId>)
+                         WHERE $noTagWhere GROUP BY <new_replays_tags.replayId>)
                     AND
                     $tagWhere
                  $orderString 
-                 GROUP BY id
+                 GROUP BY <id>
                  ";
 
             $list = $this->database->query($queryString, $map)->fetchAll();

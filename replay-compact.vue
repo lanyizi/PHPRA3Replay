@@ -208,6 +208,7 @@
 .replay-item-compact .replay-download .replay-download-container {
     position:  relative;
     background: darkslategrey;
+    padding: 1em 0;
 }
 
 .replay-item-compact .replay-download .replay-download-container:hover {
@@ -222,6 +223,7 @@
 .replay-item-compact .replay-download .replay-download-container .replay-download-number-of-downloads {
     color: grey;
     font-size: 70%;
+    padding-bottom: 0.2em;
 }
 
 </style>
