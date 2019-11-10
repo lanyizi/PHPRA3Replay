@@ -143,6 +143,8 @@ class RA3Replay {
             'fileSize',
             'timeStamp',
             'totalFrames',
+            'uploadDate',
+            'downloads'
         ];
         $allowedOrder = [
             'ASC',
@@ -185,8 +187,9 @@ class RA3Replay {
     public function getReplayList() {
         $list = null;
         $tags = $this->parseTagString($_GET['tags']);
+        $notags = $this->parseTagString($_GET['notags']);
 
-        if(empty($tags)) {
+        if(empty($tags) && empty($notags)) {
             $list = $this->database->select('new_replays', [
                 'id'
             ], [
@@ -195,17 +198,57 @@ class RA3Replay {
             ]);
         }
         else {
-            $list = $this->database->select('new_replays', [
-                '[><]new_replays_tags' => ['id' => 'replayId']
-            ], [
-                'new_replays.id (id)'
-            ], [
-                'deletedDate' => null,
-                'tag' => $tags,
-                'GROUP' => 'id',
-                'ORDER' => $this->parseOrderString($_GET['orders'])
-                
-            ]);
+            $noTagListString = '';
+            $tagListString = '';
+            $map = [];
+            foreach($notags as $i => $notag) {
+                if($i != 0) {
+                    $noTagListString += ', ';
+                }
+                $current = ":noTag$i";
+                $noTagListString += $current;
+                $map[$current] += $notag;
+            }
+
+            foreach($tags as $i => $tag) {
+                if($i != 0) {
+                    $noTagListString += ', ';
+                }
+                $current = ":noTag$i";
+                $tagListString += $current;
+                $map[$current] += $tag;
+            }
+
+            // we can assume parsed order array is safe
+            $orderString = '';
+            foreach($this->parseOrderString($_GET['orders']) as $column => $order) {
+                if(!empty($orderString)) {
+                    $orderString += ', ';
+                }
+                else {
+                    $orderString = 'ORDER BY';
+                }
+                $orderString += "$column $order";
+            }
+
+            $queryString = 
+                "SELECT <new_replays.id> AS id FROM <new_replays> 
+                 INNER JOIN <new_replays_tags> ON <new_replays.id> = <new_replays_tags.id>
+                 WHERE 
+                    <new_replays.deletedDate> = NULL
+                    AND
+                    (<id> NOT IN
+                        (SELECT <new_replays_tags.id> FROM <new_replays_tags> 
+                         WHERE <tag> IN ($noTagListString) GROUP BY <new_replays_tags.id>)
+                    AND
+                    (:isTagEmpty
+                     OR
+                     <new_replays_tags.tag> IN ($tagListString)
+                 $orderString 
+                 GROUP BY id
+                 ";
+
+            $list = $this->database->query($queryString, $map)->fetchAll();
         }
         return [
             'replays' => $list
