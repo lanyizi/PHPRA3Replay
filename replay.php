@@ -213,7 +213,7 @@ class RA3Replay {
 
             foreach($tags as $i => $tag) {
                 if($i != 0) {
-                    $noTagListString += ', ';
+                    $tagListString += ', ';
                 }
                 $current = ":tag$i";
                 $tagListString += $current;
