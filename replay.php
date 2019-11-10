@@ -201,7 +201,7 @@ class RA3Replay {
             // unfortunately we can to build sql query manually here
             $noTagListString = '';
             $tagListString = '';
-            $map = ['isTagEmpty' => empty($tags)];
+            $map = [];
             foreach($notags as $i => $notag) {
                 if($i != 0) {
                     $noTagListString .= ', ';
