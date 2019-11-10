@@ -216,7 +216,7 @@
 
 .replay-item-compact .replay-download .replay-download-container .replay-download-main {
     color: white;
-    padding-top: 40%;
+    padding-top: 0.5em;
 }
 
 .replay-item-compact .replay-download .replay-download-container .replay-download-number-of-downloads {

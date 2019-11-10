@@ -245,7 +245,7 @@ class RA3Replay {
                         (SELECT <new_replays_tags.replayId> FROM <new_replays_tags> 
                          $noTagWhere GROUP BY <new_replays_tags.replayId>)
                     AND
-                    ($tagWhere
+                    $tagWhere
                  $orderString 
                  GROUP BY id
                  ";
