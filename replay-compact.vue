@@ -83,7 +83,7 @@
         </div>
     </a>
     <div class="replay-description inline-block" v-if="expanded">
-        {{ replay.description }} <br/>
+        {{ replay.description }} <br v-if="replay.description" />
         地图名称：{{ replay.mapName }} <br/>
         玩家列表：{{ replay.players.map(team => team.map(player => player.name).join(', ')).join(' vs ') }}<br/>
         录像是{{ replaySaver }}保存的
