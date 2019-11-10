@@ -200,7 +200,7 @@ class RA3Replay {
         else {
             $noTagListString = '';
             $tagListString = '';
-            $map = [];
+            $map = ['isTagEmpty' => empty($tags)];
             foreach($notags as $i => $notag) {
                 if($i != 0) {
                     $noTagListString += ', ';
