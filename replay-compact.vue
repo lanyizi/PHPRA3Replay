@@ -295,7 +295,7 @@ module.exports = {
         },
         updateDownloads() {
             fetch('replays/replay.php?do=updateDownloadCounter&id=' + this.replayId); 
-            this.replay.downloads += 1;
+            this.replay.downloads = parseInt(this.replay.downloads) + 1;
         }
     },
     watch: {
