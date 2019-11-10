@@ -90,6 +90,8 @@ class RA3Replay {
             'players'       => [ 'TEXT',    'NOT NULL' ],
             'seed'          => [ 'INT',     'NOT NULL' ],
             'timeStamp'     => [ 'BIGINT',  'NOT NULL' ],
+            'uploadedDate'  => [ 'BIGINT',  'NOT NULL' ],
+            'downloads'     => [ 'INT',     'NOT NULL' ],
             'totalFrames'   => [ 'INT' ],
             'title'         => [ 'TEXT' ],
             'newVersion'    => [ 'INT' ],
@@ -231,6 +233,8 @@ class RA3Replay {
             'mapName',
             'mapPath',
             'timeStamp',
+            'uploadDate',
+            'downloads',
             'players',
             'totalFrames',
             'title',
@@ -253,7 +257,6 @@ class RA3Replay {
             ]);
 
             $replayData['players'] = json_decode($replayData['players'], true);
-            $replayData['url'] = $this->getWebReplayPath($id);
             $replayData['tags'] = array_column($tags, 'tag');
         }
 
@@ -274,6 +277,8 @@ class RA3Replay {
                 // Store player data as json for simplicity
                 $replayData['players'] = json_encode($replayData['players']);
                 $replayData['fileName'] = $this->input['fileName'];
+                $replayData['uploadDate'] = time();
+                $replayData['downloads'] = 0;
 
                 if(!empty($this->input['title'])) {
                     $replayData['title'] = $this->input['title'];
@@ -380,6 +385,23 @@ class RA3Replay {
         }
     }
     
+    public function downloadReplay() {
+        $id = $_GET['id'];
+        if(!$this->database->has('new_replays', [
+            'id' => $id,
+            'isPartial' => false,
+            'deletedDate' => null
+        ])) {
+            header('Location: not_found.php');
+        }
+
+        $fileName = $this->getFinalReplayName($id);
+        header('Content-disposition: attachment');
+        header('Content-type: application/octet-stream');
+        header('Content-Length: '.filesize($fileName));
+        readfile($fileName);
+    }
+
     function test() {
         try {
             return $this::parseRA3Replay(base64_decode($this->input['data']));
@@ -525,10 +547,6 @@ class RA3Replay {
 
     private function getFinalReplayName($id) {
         return $this->replayDirectory . '/' . $id . '.RA3Replay';
-    }
-
-    private function getWebReplayPath($id) {
-        return $this->webReplayDirectory . '/' . $id . '.RA3Replay';
     }
 }
 

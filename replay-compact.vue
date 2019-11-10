@@ -48,11 +48,15 @@
             <span class="replay-title">
                 {{ title }}
             </span>
-            <span class="replay-filesize">
-                ({{ (parseInt(replay.fileSize) / 1024).toFixed(2) }} KB)
-            </span>
         </div>
         <div>
+            <span class="replay-uploaddate">
+                上传日期 {{ uploadDate }}
+            </span>
+            <span class="replay-filesize">
+                录像大小 {{ (parseInt(replay.fileSize) / 1024).toFixed(2) }} KB
+            </span>
+            <br />
             <span class="replay-date">
                 录像日期 {{ date }}
             </span>
@@ -62,10 +66,21 @@
         </div>
     </div>
     <button v-if="replayDescriptionOverflowing" class="replay-show-full" @click="expanded = !expanded">
-        显示说明
+        {{ expanded ? '收起' : '显示' }}说明
     </button>
-    <a :href="replay.url" :download="downloadFileName" class="replay-download inline-block">
-        下载录像
+    <a 
+        :href="'/replays/replay.php?downloadReplay&id=' + replayId" 
+        :download="downloadFileName" 
+        @click="replay.downloads += 1"
+        class="replay-download inline-block">
+        <div class="replay-download-container">
+            <div class="replay-download-main">
+                下载录像
+            </div>
+            <div class="replay-download-number-of-downloads">
+                已被下载{{ replay.downloads }}次
+            </div>
+        </div>
     </a>
     <div class="replay-description inline-block" v-if="expanded">
         {{ replay.description }} <br/>
@@ -136,6 +151,7 @@
 
 .replay-item-compact .replay-players {
     width: 32.5%;
+    padding-left: 1em;
 }
 
 .replay-item-compact .replay-players table {
@@ -166,10 +182,13 @@
     font-weight: bold;
 }
 
+.replay-item-compact .replay-information .replay-uploaddate,
+.replay-item-compact .replay-information .replay-filesize,
 .replay-item-compact .replay-information .replay-date,
 .replay-item-compact .replay-information .replay-duration {
     font-size: 85%;
     color: #404040;
+    padding-right: 1em;
 }
 
 .replay-item-compact .replay-description {
@@ -184,6 +203,25 @@
 .replay-item-compact .replay-download {
     width: 10%;
     text-align: center;
+}
+
+.replay-item-compact .replay-download .replay-download-container {
+    position:  relative;
+    background: darkslategrey;
+}
+
+.replay-item-compact .replay-download .replay-download-container:hover {
+    background: rgb(54, 114, 114);
+}
+
+.replay-item-compact .replay-download .replay-download-container .replay-download-main {
+    color: white;
+    padding-top: 40%;
+}
+
+.replay-item-compact .replay-download .replay-download-container .replay-download-number-of-downloads {
+    color: grey;
+    font-size: 70%;
 }
 
 </style>
@@ -236,7 +274,21 @@ module.exports = {
                 return '';
             }
         },
-        padTwoDigits(x) { return x < 10 ? '0' + x.toString() : x.toString(); }
+        padTwoDigits(x) { return x < 10 ? '0' + x.toString() : x.toString(); },
+        getDateString(timeStamp) {
+            const date = new Date(timeStamp * 1000);
+            const dateMethods = ['getFullYear', 'getMonth', 'getDate'];
+            const dateString = dateMethods
+            .map((method, i) => this.padTwoDigits(date[method]() + (i == 1)))
+            .join('-');
+
+            const timeMethods = ['getHours', 'getMinutes'];
+            const timeString = timeMethods
+            .map(method => this.padTwoDigits(date[method]()))
+            .join(':');
+
+            return dateString + ' ' + timeString;
+        }
     },
     watch: {
         replayId(newValue, oldValue) {
@@ -296,18 +348,13 @@ module.exports = {
             return "??:??";
         },
         date() {
-            const date = new Date(this.replay.timeStamp * 1000);
-            const dateMethods = ['getFullYear', 'getMonth', 'getDate'];
-            const dateString = dateMethods
-            .map((method, i) => this.padTwoDigits(date[method]() + (i == 1)))
-            .join('-');
-
-            const timeMethods = ['getHours', 'getMinutes'];
-            const timeString = timeMethods
-            .map(method => this.padTwoDigits(date[method]()))
-            .join(':');
-
-            return dateString + ' ' + timeString;
+            return this.getDateString(this.replay.timeStamp);
+        },
+        uploadDate() {
+            if(!this.replay.uploadDate) {
+                return '大概是2019-11-10之前吧';
+            }
+            return this.getDateString(this.replay.uploadDate);
         },
         replayDescriptionOverflowing() {
             return true; // TODO 
