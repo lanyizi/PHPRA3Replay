@@ -246,9 +246,8 @@ class RA3Replay {
                          WHERE $noTagWhere GROUP BY <new_replays_tags.replayId>)
                     AND
                     $tagWhere
-                 $orderString 
                  GROUP BY <id>
-                 ";
+                 $orderString ";
 
             $list = $this->database->query($queryString, $map)->fetchAll();
         }
