@@ -27,14 +27,14 @@ define(['typescript', 'module'], function (ts, module) {
         esModuleInterop: true,
     }
 
-    var jsConfig = fetchCompilerOptions('/jsconfig.json', 5000)
+    var jsConfig = fetchCompilerOptions('jsconfig.json', 5000)
         .catch(function () { return defaultCompilerOptions; })
         .then(function (compilerOptions) {
             compilerOptions.allowJs = true;
             return compilerOptions;
         });
     
-    var tsConfig = fetchCompilerOptions('/tsconfig.json', 5000)
+    var tsConfig = fetchCompilerOptions('tsconfig.json', 5000)
         .catch(function () { return jsConfig; });
 
     function transpile(scriptText, transformers) {
