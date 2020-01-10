@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+      "alwaysStrict": true,
+      "strict": true,
+      "checkJs": true,
+      "target": "es5",
+      "lib": ["es2019", "dom"],
+      "module": "amd",
+      "moduleResolution": "node",
+      "noImplicitAny": true,
+      "noImplicitReturns": true,
+      "baseUrl": "./"
+    },
+    "include": [
+      "**/*.vue",
+      "**/*.d.ts",
+      "**/*.ts",
+    ]
+  }

@@ -1,0 +1,23 @@
+{
+    "python.pythonPath": "C:\\Python27\\python.exe",
+    "vetur.experimental.templateInterpolationService": true,
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "vetur.format.options.tabSize": 4,
+    "vetur.format.defaultFormatter.js":"prettier",
+    "vetur.format.defaultFormatter.html": "prettyhtml",
+    "vetur.format.defaultFormatterOptions": {
+        "prettyhtml": {
+            "printWidth": 76,
+            "singleQuote": false,
+            "wrapAttributes": false,
+            "sortAttributes": false,
+        },
+        "prettier": {
+            "printWidth": 76,
+            "tabWidth": 4,
+            "singleQuote": true
+        }
+    },
+    "html.format.wrapLineLength": 76,
+}

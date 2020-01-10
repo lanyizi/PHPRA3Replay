@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>节操录像站</title>
+    <meta name="theme-color" content="#101010">
+    <style>
+        html * {
+            box-sizing: border-box;
+        }
+
+        html body {
+            background: #101010;
+        }
+
+        #initializing {
+            position: absolute;
+            left: 5%;
+            bottom: 45%;
+            width: 90%;
+            overflow: hidden;
+            color: lightgray;
+            text-align: center;
+            z-index: 100;
+            font-family: "Microsoft YaHei", Arial, Helvetica, sans-serif;
+        }
+
+        #initializing > li {
+            padding: 0.2em;
+            font-size: 75%;
+        }
+
+        #initializing > li:nth-last-child(3) {
+            font-size: 100%;
+        }
+
+        #initializing > li:nth-last-child(2) {
+            font-size: 150%;
+        }
+
+        @keyframes FadeIn { 
+            0% {
+                opacity: 0;
+                transform: scale(.1);
+            }
+
+            75% {
+                opacity: 1;
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        #initializing > li:last-child {
+            padding: 0.2em;
+            font-size: 200%;
+            color: white;
+            animation: FadeIn 0.25s linear;
+            animation-fill-mode: both;
+        }
+
+        #initializing > li.my-load-error {
+            color: red;
+        }
+
+        @keyframes FadeOut {
+            0% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .fade-out {
+            animation-delay: 0.75s;
+            animation: FadeOut 1s linear;
+            animation-fill-mode: both;
+        }
+    </style>
+</head>
+<body>
+    <ul id="initializing">
+        <li>Initializing</li>
+    </ul>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reset-css/reset.css" />
+    <!--<link rel="stylesheet" href="temp.css" />-->
+    <script src="https://cdn.jsdelivr.net/npm/core-js-bundle@latest/minified.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/whatwg-fetch@latest/dist/fetch.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/requirejs@^2.3.6/require.js"></script>
+    <script src="loadingScreen.js"></script>
+    <script src="scripts/requireJsUtilities/requirejsEntryPoint.js"></script>
+    <script>
+        requireJsEntryPoint(
+            'scripts',
+            window.makeMyLoadingListComplete,
+            function (error) { 
+                window.addMyLoadingListItem(error, true);
+                throw error;
+            }
+        );
+    </script>    
+</body>
+
+</html>
