@@ -77,7 +77,7 @@
                     </div>
                 </div>
             </td>
-            <td class="replay-details">
+            <td class="replay-details-button">
                 <a
                     @click="$emit('replay-details', replayId)"
                     class="replay-button"
@@ -86,7 +86,7 @@
                     <div>{{ $tc('numberOfReplies', 0) }}</div>
                 </a>
             </td>
-            <td class="replay-download">
+            <td class="replay-download-button">
                 <a
                     :href="replay.url"
                     :download="downloadFileName"
@@ -444,8 +444,8 @@ td {
     width: 40%;
 }
 
-.replay-details,
-.replay-download {
+.replay-details-button,
+.replay-download-button {
     width: 11.25%;
     padding-right: 1%;
 }
@@ -613,8 +613,8 @@ td {
     width: 55%;
 }
 
-.succinct .replay-details,
-.succinct .replay-download {
+.succinct .replay-details-button,
+.succinct .replay-download-button {
     display: none;
 }
 </style>
@@ -638,14 +638,14 @@ td {
     width: 45.625%;
 }
 
-.one-button-only .replay-details,
-.one-button-only .replay-download {
+.one-button-only .replay-details-button,
+.one-button-only .replay-download-button {
     width: 11.25%;
     padding-right: 1%;
 }
 
-.one-button-only .no-details-button .replay-details,
-.one-button-only .no-download-button .replay-download {
+.one-button-only .no-details-button .replay-details-button,
+.one-button-only .no-download-button .replay-download-button {
     display: none;
 }
 </style>
