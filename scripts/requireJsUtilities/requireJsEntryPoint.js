@@ -162,7 +162,7 @@ function requireJsEntryPoint(
         });
     }
 
-    fetch('/package.json')
+    fetch('package.json')
         .then(function (response) { return response.json() })
         .then(onPackageJsonReady)
         .catch(function (reason) {
