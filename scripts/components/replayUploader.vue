@@ -96,7 +96,7 @@
             <replay-item
                 v-if="info.showReplay"
                 :replay-data="info.details"
-                :succinct-mode="true"
+                display-mode="succinct"
             ></replay-item>
         </div>
     </div>

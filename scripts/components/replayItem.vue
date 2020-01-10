@@ -1,5 +1,5 @@
 <template>
-    <table :class="{ succinct: succinctMode }" class="replay-item-compact">
+    <table :class="displayClasses" class="replay-item-compact">
         <tr>
             <td class="replay-id">
                 <div class="replay-id-box">
@@ -77,7 +77,7 @@
                     </div>
                 </div>
             </td>
-            <td class="replay-expand">
+            <td class="replay-details">
                 <a
                     @click="$emit('replay-details', replayId)"
                     class="replay-button"
@@ -98,17 +98,6 @@
                 </a>
             </td>
         </tr>
-        <!--<tr class="replay-description" v-if="expanded">
-            <td>
-                {{ replay.description }}
-                <br v-if="replay.description" />
-                地图名称：{{ replay.mapName }}
-                <br />
-                玩家列表：{{ replay.players.map(team => team.map(player => player.name).join(', ')).join(' vs ') }}
-                <br />
-                录像是{{ replaySaver }}保存的
-            </td>
-        </tr>-->
     </table>
 </template>
 <script lang="ts">
@@ -162,11 +151,22 @@ export default Vue.extend({
     props: {
         replayId: String,
         replayData: Object,
-        succinctMode: Boolean
+        displayMode: String
     },
     computed: {
         replay(): Replay {
             return { ...this.localReplay, ...(this.replayData || {}) };
+        },
+        displayClasses(): string[] {
+            const mode = this.displayMode;
+            switch (mode) {
+                case 'succinct':
+                    return [mode];
+                case 'no-details-button':
+                case 'no-download-button':
+                    return ['one-button-only', mode];
+            }
+            return [];
         },
         mapImagePath(): string {
             const useDefaultMap =
@@ -246,7 +246,13 @@ export default Vue.extend({
                             date.getMonth() + 1,
                             date.getDate()
                         ].join('-');
-                        return `${day} ${date.getHours()}:${date.getMinutes()}`;
+
+                        const time = [
+                            date.getHours(),
+                            date.getMinutes()
+                        ].join(':');
+
+                        return `${day} ${time}`;
                     }
                 } catch {}
                 return '?';
@@ -323,26 +329,8 @@ export default Vue.extend({
                 parseInt(this.replay.downloads)
             );
         },
-        replayDescriptionOverflowing(): boolean {
-            return true; // TODO
-        },
         downloadFileName(): string {
             return this.replay.fileName;
-        },
-        replaySaver(): string {
-            const saverArray = this.replay.players
-                .map(team =>
-                    team
-                        .filter(player => player.isSaver)
-                        .map(player => player.name)
-                )
-                .filter(team => team.length > 0);
-
-            if (saverArray.length == 1 && saverArray[0].length == 1) {
-                return saverArray[0][0];
-            }
-
-            return '未知玩家';
         }
     },
     methods: {
@@ -355,7 +343,10 @@ export default Vue.extend({
             );
             const parsed = await response.json();
             if (parsed) {
-                Object.assign(this.localReplay, parsed.replay);
+                try {
+                    Object.assign(this.localReplay, parsed.replay);
+                    this.$emit('replay-fetched', { ...this.localReplay });
+                } catch {}
             }
         },
         onMapPathFailed() {
@@ -453,11 +444,7 @@ td {
     width: 40%;
 }
 
-.replay-expand {
-    width: 11.25%;
-    padding-right: 1%;
-}
-
+.replay-details,
 .replay-download {
     width: 11.25%;
     padding-right: 1%;
@@ -605,7 +592,10 @@ td {
 .replay-button div:not(:first-child) {
     font-size: 80%;
 }
+</style>
 
+<!-- Succinct mode styles -->
+<style scoped>
 .succinct .replay-id {
     display: none;
 }
@@ -617,19 +607,45 @@ td {
 .succinct .replay-players {
     width: 30%;
     padding-left: 1%;
-    background: #303030;
-    color: #eaeaea;
 }
 
 .succinct .replay-information {
     width: 55%;
 }
 
-.succinct .replay-expand {
+.succinct .replay-details,
+.succinct .replay-download {
     display: none;
 }
+</style>
 
-.succinct .replay-download {
+<!-- Single button mode styles -->
+<style scoped>
+.one-button-only .replay-id {
+    width: 7.5%;
+}
+
+.one-button-only .replay-minimap {
+    width: 10%;
+}
+
+.one-button-only .replay-players {
+    width: 25.625%;
+    padding-left: 1%;
+}
+
+.one-button-only .replay-information {
+    width: 45.625%;
+}
+
+.one-button-only .replay-details,
+.one-button-only .replay-download {
+    width: 11.25%;
+    padding-right: 1%;
+}
+
+.one-button-only .no-details-button .replay-details,
+.one-button-only .no-download-button .replay-download {
     display: none;
 }
 </style>
