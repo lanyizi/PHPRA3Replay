@@ -113,7 +113,6 @@ export default Vue.extend({
         lastApiQuery: {} as Record<string, string>
     }),
     props: {
-        apiUrl: String,
         existingTags: {
             type: Array as () => string[],
             default: () => []

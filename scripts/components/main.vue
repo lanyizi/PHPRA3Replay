@@ -1,29 +1,27 @@
 <template>
     <div class="replays-main">
         <div class="nav-wrapper">
-        <nav>
-            <span>{{ $t('siteName') }}</span>
-            <div
-                v-for="mode in modes"
-                :key="mode.mode"
-                class="mode-link-box"
-                :class="{ 'mode-link-active': mode.isActive }"
-            >
-                <router-link :to="mode.to">{{ $t(mode.mode) }}</router-link>
-            </div>
-        </nav>
+            <nav>
+                <span>{{ $t('siteName') }}</span>
+                <div
+                    v-for="mode in modes"
+                    :key="mode.mode"
+                    class="mode-link-box"
+                    :class="{ 'mode-link-active': mode.isActive }"
+                >
+                    <router-link :to="mode.to">{{ $t(mode.mode) }}</router-link>
+                </div>
+            </nav>
         </div>
         <div class="replays-main-content">
-            <router-view 
-                :api-url="apiUrl"
-                :existing-tags="existingTags"
-            ></router-view>
+            <router-view :existing-tags="existingTags"></router-view>
         </div>
     </div>
 </template>
 <script lang="ts">
 import Vue from 'vue';
 import VueRouter, { Location } from 'vue-router';
+import { apiUrl } from '../commonConfig';
 import ReplayList from './replayList.vue';
 import {
     filterModes,
@@ -40,7 +38,6 @@ type RouterLinkParam = {
 export default Vue.extend({
     data() {
         return {
-            apiUrl: '/replays/replay.php',
             existingTags: [] as string[]
         };
     },
@@ -66,7 +63,7 @@ export default Vue.extend({
     },
     methods: {
         async fetchExistingTags() {
-            const response = await fetch(this.apiUrl + '?do=getTagList');
+            const response = await fetch(`${apiUrl}?do=getTagList`);
             const json = await response.json();
             const tags: { tag: string }[] = json.tags;
             this.existingTags = tags.map(x => x.tag);
@@ -97,7 +94,7 @@ export default Vue.extend({
 </script>
 <style scoped>
 * {
-    font-family: "Microsoft YaHei", Arial, Helvetica, sans-serif;
+    font-family: 'Microsoft YaHei', Arial, Helvetica, sans-serif;
 }
 
 .replays-main {
@@ -105,7 +102,7 @@ export default Vue.extend({
     color: white;
 }
 
-input, 
+input,
 textarea,
 button {
     /* background: inherit; <- does not work very well on IE */
@@ -138,7 +135,7 @@ nav {
     max-width: 1280px;
     margin: 0 auto;
     font-size: 150%;
-    color: #E0E0E0;
+    color: #e0e0e0;
     display: flex;
     align-items: center;
 }
@@ -172,8 +169,8 @@ nav a {
 }
 
 nav .mode-link-active a {
-    color: #FFF;
-    border-bottom: 4px solid #00BCD4;
+    color: #fff;
+    border-bottom: 4px solid #00bcd4;
 }
 
 .replays-main-content {

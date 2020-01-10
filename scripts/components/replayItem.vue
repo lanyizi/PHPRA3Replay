@@ -113,6 +113,7 @@
 </template>
 <script lang="ts">
 import Vue from 'vue';
+import { apiUrl, replaySettings } from '../commonConfig';
 import { toQuery as filtersToQuery } from './replayFilters.vue';
 
 interface PlayerWithFactionIcon {
@@ -154,16 +155,13 @@ export type Replay = ReturnType<typeof emptyReplayData>;
 
 export default Vue.extend({
     data: () => ({
+        ...replaySettings,
         localReplay: emptyReplayData(),
         minimapFailed: false
     }),
     props: {
-        apiUrl: String,
         replayId: String,
         replayData: Object,
-        defaultMapImagePath: String,
-        mapImageFormat: String,
-        factionIconFormat: String,
         succinctMode: Boolean
     },
     computed: {
@@ -237,7 +235,7 @@ export default Vue.extend({
                     const value = this.replay[x];
                     const number = parseInt(value + '');
                     const date = new Date(number * 1000);
-                    if(isNaN(date.getTime())) {
+                    if (isNaN(date.getTime())) {
                         return '?';
                     }
                     try {
@@ -280,7 +278,7 @@ export default Vue.extend({
                 const seconds = totalSeconds % 60;
 
                 return [minutes, seconds]
-                    .map(x => x < 10 ? `0${x}` : `${x}`)
+                    .map(x => (x < 10 ? `0${x}` : `${x}`))
                     .join(':');
             };
 
@@ -353,7 +351,7 @@ export default Vue.extend({
                 return;
             }
             const response = await fetch(
-                `${this.apiUrl}?do=getReplayInformation&id=${this.replayId}`
+                `${apiUrl}?do=getReplayInformation&id=${this.replayId}`
             );
             const parsed = await response.json();
             if (parsed) {
@@ -373,10 +371,7 @@ export default Vue.extend({
             }
         },
         updateDownloads() {
-            const actionName = 'updateDownloadCounter';
-            fetch(
-                this.apiUrl + '?do=' + actionName + '&id=' + this.replayId
-            );
+            fetch(`${apiUrl}?do=updateDownloadCounter&id=${this.replayId}`);
             this.replay.downloads = (
                 parseInt(this.replay.downloads) + 1
             ).toString();

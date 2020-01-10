@@ -2,7 +2,6 @@
     <div class="replay-list">
         <div class="replay-list-container">
             <replay-filters
-                :api-url="apiUrl"
                 :existing-tags="existingTags"
                 :filters="filters"
                 @update-data="filters = $event"
@@ -29,15 +28,10 @@
             <replay-item
                 v-for="id in currentPageReplays"
                 :key="id"
-                :api-url="apiUrl"
                 :replay-id="id"
-                faction-icon-format="/replays/ra3images/v1/factions/*.png"
-                map-image-format="/replays/ra3images/v1/maps/*_art.png"
-                default-map-image-path="/replays/ra3images/v1/factions/7.png"
             ></replay-item>
         </div>
         <replay-uploader
-            :api-url="apiUrl"
             :existing-tags="existingTags"
             :show-tournament-hints="filters.mode === 'tournamentsOnly'"
             @replay-uploaded="fetchList"
@@ -48,6 +42,9 @@
 <script lang="ts">
 import Vue from 'vue';
 import { TranslateResult } from 'vue-i18n';
+import { isString } from '../utils';
+import { firstString, InputQueryValue, InputQuery } from '../routerUtils';
+import { apiUrl } from '../commonConfig';
 import ReplayFilters, {
     fromQuery as filtersFromQuery,
     toQuery as filtersToQuery
@@ -59,8 +56,6 @@ import ReplayPageSelector, {
 import ReplayItem from './replayItem.vue';
 import ReplayUploader from './replayUploader.vue';
 import StatusBar from './statusBar.vue';
-import { firstString, InputQueryValue, InputQuery } from '../routerUtils';
-import { isString } from '../utils';
 
 export default Vue.extend({
     components: {
@@ -78,7 +73,6 @@ export default Vue.extend({
         displayedCurrentTime: Date.now()
     }),
     props: {
-        apiUrl: String,
         existingTags: Array as () => string[]
     },
     computed: {
@@ -190,7 +184,7 @@ export default Vue.extend({
             const now = Date.now();
             this.fetches = this.fetches.filter(x => x >= now).concat(now);
             const response = await fetch(
-                `${this.apiUrl}?do=getReplayList&${queries}`
+                `${apiUrl}?do=getReplayList&${queries}`
             );
             const replays = (await response.json()).replays;
             if (Array.isArray(replays)) {

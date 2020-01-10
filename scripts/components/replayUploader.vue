@@ -97,9 +97,6 @@
                 v-if="info.showReplay"
                 :replay-data="info.details"
                 :succinct-mode="true"
-                faction-icon-format="/replays/ra3images/v1/factions/*.png"
-                map-image-format="/replays/ra3images/v1/maps/*_art.png"
-                default-map-image-path="/replays/ra3images/v1/factions/7.png"
             ></replay-item>
         </div>
     </div>
@@ -107,6 +104,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { isAnyOf } from '../utils';
+import { apiUrl } from '../commonConfig';
 import MyTagsInput from './myTagsInput.vue';
 import StatusBar from './statusBar.vue';
 import ReplayItem, { emptyReplayData, Replay } from './replayItem.vue';
@@ -196,13 +194,11 @@ export default Vue.extend({
         'double-confirm-button': DoubleConfirmButton
     },
     data: () => ({
-        //canUpload: true,
         files: [] as ReplayFile[],
         uploadData: emptyUploadData(),
         dragEnter: false
     }),
     props: {
-        apiUrl: String,
         existingTags: {
             type: Array as () => string[],
             default: []
@@ -317,7 +313,7 @@ export default Vue.extend({
     },
     methods: {
         post(action: string, data: any) {
-            return fetch(`${this.apiUrl}?do=${action}`, {
+            return fetch(`${apiUrl}?do=${action}`, {
                 method: 'post',
                 body: JSON.stringify(data),
                 headers: {
@@ -524,7 +520,7 @@ export default Vue.extend({
 .file-picker:hover,
 .file-picker-active {
     background: #303030;
-    border: 1px dashed #CCCCCC;
+    border: 1px dashed #cccccc;
 }
 
 .file-picker input {
@@ -533,7 +529,7 @@ export default Vue.extend({
 
 .file-picker-hint {
     font-size: 75%;
-    color: #AAAAAA;
+    color: #aaaaaa;
 }
 
 .file-picker-active .drag-drop-hint {
@@ -551,7 +547,7 @@ export default Vue.extend({
 
 .replay-previews-hint {
     font-size: 62.5%;
-    color: #CCCCCC;
+    color: #cccccc;
 }
 
 .replay-previews-item {
