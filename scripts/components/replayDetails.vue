@@ -74,3 +74,50 @@ export default Vue.extend({
     }
 });
 </script>
+<style>
+.replay-description-container {
+    min-width: 1024px;
+    width: 80%;
+    margin: 0 auto;
+    padding: 1.5em 2em;
+    margin-top: -2em;
+    padding-top: 2.5em;
+    background: #151515;
+    color: #e0e0e0;
+    border-left: 1px solid #404040;
+    border-right: 1px solid #404040;
+}
+
+.replay-description-container p {
+    padding-bottom: 0.5em;
+}
+
+.hint {
+    margin-left: 0.5em;
+}
+
+.map-name-container,
+.replay-saver,
+.number-of-replies {
+    font-size: 90%;
+    vertical-align: middle;
+}
+
+.map-name {
+    font-weight: bold;
+}
+
+.replay-saver-hint,
+.number-of-replies-hint,
+.number-of-replies-hint-2 {
+    color: #808080;
+}
+
+.number-of-replies-hint-2 {
+    font-size: 80%;
+}
+
+.replay-description {
+    padding-top: 1em;
+}
+</style>
