@@ -644,8 +644,8 @@ td {
     padding-right: 1%;
 }
 
-.one-button-only .no-details-button .replay-details-button,
-.one-button-only .no-download-button .replay-download-button {
+.one-button-only.no-details-button .replay-details-button,
+.one-button-only.no-download-button .replay-download-button {
     display: none;
 }
 </style>
