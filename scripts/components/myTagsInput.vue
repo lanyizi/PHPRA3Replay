@@ -68,7 +68,7 @@ export default Vue.extend({
             }
 
             return array.map(value => ({
-                text: this.$t(`${value}`).toString(),
+                text: `${this.$t(`${value}`)}`,
                 value
             }));
         },

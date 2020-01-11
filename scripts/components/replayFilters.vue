@@ -188,10 +188,10 @@ export default Vue.extend({
     },
     methods: {
         toSortOptionsTags(sortOptions: unknown[]): Tag<SortOption>[] {
+            const t = (x: string) => `${this.$t(x)}`;
             return asArray(sortOptions, isSortOption).map(x => ({
                 text:
-                    this.$t('sortBy.' + x.column).toString() +
-                    this.$t('sortOrder.' + x.order),
+                    t('sortBy.' + x.column) + t('sortOrder.' + x.order),
                 value: x
             }));
         },

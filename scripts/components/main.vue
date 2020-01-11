@@ -9,7 +9,11 @@
                     class="mode-link-box"
                     :class="{ 'mode-link-active': mode.isActive }"
                 >
-                    <router-link :to="mode.to">{{ $t(mode.mode) }}</router-link>
+                    <router-link :to="mode.destination">
+                        {{
+                        $t(mode.mode)
+                        }}
+                    </router-link>
                 </div>
             </nav>
         </div>
@@ -20,37 +24,44 @@
 </template>
 <script lang="ts">
 import Vue from 'vue';
-import VueRouter, { Location } from 'vue-router';
+import VueRouter from 'vue-router';
 import { apiUrl } from '../commonConfig';
 import ReplayList from './replayList.vue';
+import ReplayDetails from './replayDetails.vue';
 import {
     filterModes,
     normalizeFiltersProp,
     toQuery as modeToQuery
 } from './replayFilters.vue';
 
-type RouterLinkParam = {
-    mode: string;
-    isActive: boolean;
-    to: Location;
-};
-
 export default Vue.extend({
+    router: new VueRouter({
+        routes: [
+            { name: 'home', path: '/', component: ReplayList },
+            {
+                name: 'details',
+                path: '/details/:replayId',
+                component: ReplayDetails,
+                props: true,
+            },
+            { path: '*', redirect: { name: 'home' } },
+        ]
+    }),
     data() {
         return {
             existingTags: [] as string[]
         };
     },
     computed: {
-        modes(): RouterLinkParam[] {
+        modes() {
             const currentMode = normalizeFiltersProp({
                 mode: this.$route.query.mode
             }).mode;
             return filterModes.map(mode => ({
                 mode,
                 isActive: mode === currentMode,
-                to: {
-                    path: '/',
+                destination: {
+                    name: 'home',
                     query: modeToQuery({
                         includes: [],
                         excludes: [],
@@ -69,9 +80,6 @@ export default Vue.extend({
             this.existingTags = tags.map(x => x.tag);
         }
     },
-    router: new VueRouter({
-        routes: [{ path: '/', component: ReplayList }]
-    }),
     i18n: {
         messages: {
             zh: {

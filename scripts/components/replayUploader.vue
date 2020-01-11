@@ -103,6 +103,7 @@
 </template>
 <script lang="ts">
 import Vue from 'vue';
+import { TranslateResult } from 'vue-i18n';
 import { isAnyOf } from '../utils';
 import { apiUrl } from '../commonConfig';
 import MyTagsInput from './myTagsInput.vue';
@@ -289,11 +290,11 @@ export default Vue.extend({
                     : null;
             return getStatus();
         },
-        statusText(): string | null {
+        statusText(): TranslateResult | null {
             if (this.status === null) {
                 return null;
             }
-            return `${this.$t(`uploaderStatus.${this.status}`)}`;
+            return this.$t(`uploaderStatus.${this.status}`);
         },
         loading(): boolean {
             return isAnyOf(this.status, 'uploading', 'readingFiles');

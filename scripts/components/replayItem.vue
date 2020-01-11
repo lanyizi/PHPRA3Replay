@@ -55,21 +55,15 @@
                 <div class="replay-information-box">
                     <span class="replay-title">{{ title }}</span>
                     <table>
-                        <tr v-for="(row, i) in replayInformation" :key="i">
-                            <td
-                                v-for="data in row"
-                                :key="data.text"
-                                :class="data.type"
-                            >
-                                <span>{{ data.text }}</span>
-                            </td>
+                        <tr v-for="(r, i) in replayInformation" :key="i">
+                            <td v-for="data in r" :key="data">{{ data }}</td>
                         </tr>
                     </table>
                     <div class="replay-tags">
                         <router-link
                             v-for="(tag, i) in replay.tags"
                             :key="tag"
-                            :to="{ path: '/', query: tagsToQuery[i] }"
+                            :to="{ name: 'home' , query: tagsToQuery[i] }"
                             class="replay-tag"
                         >
                             <div>{{ tag }}</div>
@@ -78,13 +72,13 @@
                 </div>
             </td>
             <td class="replay-details-button">
-                <a
-                    @click="$emit('replay-details', replayId)"
+                <router-link
+                    :to="{ name: 'details', params: { replayId: replayId } }"
                     class="replay-button"
                 >
                     <div>{{ $t('viewDetails') }}</div>
                     <div>{{ $tc('numberOfReplies', 0) }}</div>
-                </a>
+                </router-link>
             </td>
             <td class="replay-download-button">
                 <a
@@ -102,25 +96,21 @@
 </template>
 <script lang="ts">
 import Vue from 'vue';
+import { TranslateResult } from 'vue-i18n';
 import { apiUrl, replaySettings } from '../commonConfig';
 import { toQuery as filtersToQuery } from './replayFilters.vue';
 
-interface PlayerWithFactionIcon {
+type PlayerWithFactionIcon = {
     name: string;
     factionIcon: string;
-}
+};
 
-interface ReplayInfoEntry {
-    text: string;
-    type: 'replay-info-header' | 'replay-info-data';
-}
-
-interface Player {
+type Player = {
     name: string;
     faction: number;
     isSaver: boolean;
     factionIcon?: string;
-}
+};
 
 export const emptyReplayData = () => ({
     description: '',
@@ -210,69 +200,56 @@ export default Vue.extend({
                     };
                 });
         },
-        title(): string {
+        title(): TranslateResult {
             return (
                 this.replay.title ||
                 this.replay.fileName ||
-                this.$t('loadingTitle').toString()
+                this.$t('loadingTitle')
             );
         },
-        replayInformation(): ReplayInfoEntry[][] {
-            const t = (x: string) => this.$t(x).toString();
+        replayInformation(): TranslateResult[][] {
+            const join = (separator: string, ...args: number[]) =>
+                args.map(x => (x < 10 ? `0${x}` : `${x}`)).join(separator);
 
-            const n = (x: number, args?: Intl.NumberFormatOptions) => {
-                const fallback = `${Math.round(x)}`;
+            const dateFallback = (d: Date) =>
+                join('-', d.getFullYear(), d.getMonth() + 1, d.getDate()) +
+                ' ' +
+                join(':', d.getHours(), d.getMinutes());
+
+            const fromUnixTime = (unixTime: string) => {
+                const date = new Date(parseInt(`${unixTime}`) * 1000);
+                try {
+                    return isNaN(date.getTime())
+                        ? '?'
+                        : this.$d(date, 'dateTime') || dateFallback(date);
+                } catch {
+                    return dateFallback(date);
+                }
+            };
+
+            const uploadDate = !this.replay.uploadDate
+                ? this.$t('notUploadedYet')
+                : this.replay.uploadDate === '0'
+                ? this.$t('noUploadDate')
+                : fromUnixTime(this.replay.uploadDate);
+
+            const getFileSize = () => {
+                const n = parseInt(this.replay.fileSize) / 1024;
+                const fallback = `${Math.round(n)}KB`;
                 try {
                     // https://github.com/kazupon/vue-i18n/issues/749
-                    const s = this.$n(x, args as Record<string, string>);
-                    return s || fallback;
+                    const s = this.$n(n, {
+                        maximumSignificantDigits: 4,
+                        useGrouping: false
+                    } as any);
+                    return `${s}KB` || fallback;
                 } catch {}
                 return fallback;
             };
 
-            const fromUnixTime = (x: keyof Replay) => {
-                try {
-                    const value = this.replay[x];
-                    const number = parseInt(value + '');
-                    const date = new Date(number * 1000);
-                    if (isNaN(date.getTime())) {
-                        return '?';
-                    }
-                    try {
-                        return this.$d(date, 'dateTime');
-                    } catch {
-                        const day = [
-                            date.getFullYear(),
-                            date.getMonth() + 1,
-                            date.getDate()
-                        ].join('-');
+            const replayDate = fromUnixTime(this.replay.timeStamp);
 
-                        const time = [
-                            date.getHours(),
-                            date.getMinutes()
-                        ].join(':');
-
-                        return `${day} ${time}`;
-                    }
-                } catch {}
-                return '?';
-            };
-
-            const uploadDate = !this.replay.uploadDate
-                ? t('notUploadedYet')
-                : this.replay.uploadDate === '0'
-                ? t('noUploadDate')
-                : fromUnixTime('uploadDate');
-
-            const fileSize =
-                n(parseInt(this.replay.fileSize) / 1024, {
-                    maximumSignificantDigits: 4,
-                    useGrouping: false
-                }) + 'KB';
-
-            const replayDate = fromUnixTime('timeStamp');
-
-            const getDuration = () => {
+            const getLength = () => {
                 if (!this.replay.totalFrames) {
                     return '??:??';
                 }
@@ -283,34 +260,13 @@ export default Vue.extend({
                 const minutes = Math.floor(totalSeconds / 60);
                 const seconds = totalSeconds % 60;
 
-                return [minutes, seconds]
-                    .map(x => (x < 10 ? `0${x}` : `${x}`))
-                    .join(':');
+                return join(':', minutes, seconds);
             };
 
-            const getTitle = (headerId: string) => ({
-                text: t(headerId),
-                type: 'replay-info-header' as const
-            });
-
-            const asData = (x: string) => ({
-                text: x,
-                type: 'replay-info-data' as const
-            });
-
+            const t = (x: string) => this.$t(x);
             return [
-                [
-                    getTitle('uploadDate'),
-                    asData(uploadDate),
-                    getTitle('fileSize'),
-                    asData(fileSize)
-                ],
-                [
-                    getTitle('replayDate'),
-                    asData(replayDate),
-                    getTitle('replayDuration'),
-                    asData(getDuration())
-                ]
+                [t('uploadDate'), uploadDate, t('fileSize'), getFileSize()],
+                [t('replayDate'), replayDate, t('gameLength'), getLength()]
             ];
         },
         tagsToQuery(): ReturnType<typeof filtersToQuery>[] {
@@ -338,15 +294,17 @@ export default Vue.extend({
             if (!this.replayId) {
                 return;
             }
-            const response = await fetch(
-                `${apiUrl}?do=getReplayInformation&id=${this.replayId}`
-            );
-            const parsed = await response.json();
-            if (parsed) {
-                try {
-                    Object.assign(this.localReplay, parsed.replay);
-                    this.$emit('replay-fetched', { ...this.localReplay });
-                } catch {}
+
+            const data = emptyReplayData();
+            try {
+                const response = await fetch(
+                    `${apiUrl}?do=getReplayInformation&id=${this.replayId}`
+                );
+                const parsed = await response.json();
+                Object.assign(data, parsed.replay);
+            } finally {
+                Object.assign(this.localReplay, data);
+                this.$emit('replay-fetched', { ...this.localReplay });
             }
         },
         onMapPathFailed() {
@@ -384,7 +342,7 @@ export default Vue.extend({
                 notUploadedYet: '也许就是几秒钟后呢？',
                 fileSize: '文件大小',
                 replayDate: '录像日期',
-                replayDuration: '录像时长',
+                gameLength: '录像时长',
                 viewDetails: '详细信息',
                 numberOfReplies: '{n}条回复',
                 download: '下载录像',
