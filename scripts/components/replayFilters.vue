@@ -109,7 +109,7 @@ export default Vue.extend({
         'my-tags-input': MyTagsInput
     },
     data: () => ({
-        tournamentTags: ['CMS'],
+        tournamentTags: ['CMS', '贺岁杯'],
         lastApiQuery: {} as Record<string, string>
     }),
     props: {
